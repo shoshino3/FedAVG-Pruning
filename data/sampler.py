@@ -46,8 +46,8 @@ class FederatedSampler(Sampler):
         idx_shard = [i for i in range(self.n_shards)]
         dict_users = {i: np.array([]) for i in range(self.n_clients)}
         idxs = np.arange(self.n_shards * num_imgs)
-        labels = self.dataset.train_labels.numpy()
-
+        #labels = self.dataset.train_labels.numpy()
+        labels = np.array(self.dataset.targets)
         # sort labels
         idxs_labels = np.vstack((idxs, labels))
         idxs_labels = idxs_labels[:, idxs_labels[1, :].argsort()]

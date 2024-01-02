@@ -1,4 +1,4 @@
-name: fed_avg
+name: f_avg
 channels:
   - pytorch
   - conda-forge
@@ -8,10 +8,6 @@ dependencies:
   - _libgcc_mutex=0.1=main
   - _openmp_mutex=5.1=1_gnu
   - alabaster=0.7.12=pyhd3eb1b0_0
-  - anaconda=2022.10=py39_0
-  - anaconda-client=1.11.0=py39h06a4308_0
-  - anaconda-navigator=2.3.1=py39h06a4308_0
-  - anaconda-project=0.11.1=py39h06a4308_0
   - anyio=3.5.0=py39h06a4308_0
   - appdirs=1.4.4=pyhd3eb1b0_0
   - argon2-cffi=21.3.0=pyhd3eb1b0_0

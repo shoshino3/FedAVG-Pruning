@@ -9,6 +9,7 @@ import wandb
 class Logger:
     def __init__(self, args):
         self.args = args
+        self.wandb = None
         if args.wandb:
             wandb.init(project=args.wandb_project, name=args.exp_name, config=args)
             self.wandb = wandb

@@ -1,1 +1,1 @@
-from .models import CNN, MLP
+from .models import CNN, MLP, vgg

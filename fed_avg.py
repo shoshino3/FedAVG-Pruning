@@ -5,9 +5,10 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.utils.data import DataLoader
+import math
 
 from data import MNISTDataset, FederatedSampler
-from models import CNN, MLP
+from models import CNN, MLP, vgg
 from utils import arg_parser, average_weights, Logger
 
 
@@ -36,8 +37,10 @@ class FedAvg:
             )
             self.target_acc = 0.97
         elif self.args.model_name == "cnn":
-            self.root_model = CNN(n_channels=1, n_classes=10).to(self.device)
+            self.root_model = CNN(n_channels=3, n_classes=10).to(self.device)
             self.target_acc = 0.99
+        elif self.args.model_name == "vgg":
+            self.root_model = vgg(dataset='cifar10', depth=19).to(self.device)
         else:
             raise ValueError(f"Invalid model name, {self.args.model_name}")
 
