@@ -12,6 +12,36 @@ from models import CNN, MLP, vgg
 from utils import arg_parser, average_weights, Logger
 
 
+
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+import torch.optim as optim
+from torch.utils.data import DataLoader
+
+from torchvision.datasets import MNIST, CIFAR10
+from torchvision.transforms import Compose, ToTensor, Normalize
+from torchvision import transforms
+
+from tensorboardX import SummaryWriter
+from ignite.engine import Events, create_supervised_trainer, create_supervised_evaluator
+from ignite.metrics import Accuracy, Loss
+from ignite.contrib.handlers import ProgressBar
+
+from snip import SNIP
+
+torch.manual_seed(42)
+torch.backends.cudnn.deterministic = True
+torch.backends.cudnn.benchmark = False
+
+LOG_INTERVAL = 20
+INIT_LR = 0.1
+WEIGHT_DECAY_RATE = 0.0005
+EPOCHS = 250
+REPEAT_WITH_DIFFERENT_SEED = 3
+
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
 class FedAvg:
     """Implementation of FedAvg
     http://proceedings.mlr.press/v54/mcmahan17a/mcmahan17a.pdf
@@ -45,6 +75,41 @@ class FedAvg:
             raise ValueError(f"Invalid model name, {self.args.model_name}")
 
         self.reached_target_at = None  # type: int
+
+
+
+    def apply_prune_mask(net, keep_masks):
+
+        # Before I can zip() layers and pruning masks I need to make sure they match
+        # one-to-one by removing all the irrelevant modules:
+        prunable_layers = filter(
+            lambda layer: isinstance(layer, nn.Conv2d) or isinstance(
+                layer, nn.Linear), net.modules())
+
+        for layer, keep_mask in zip(prunable_layers, keep_masks):
+            assert (layer.weight.shape == keep_mask.shape)
+
+            def hook_factory(keep_mask):
+                """
+                The hook function can't be defined directly here because of Python's
+                late binding which would result in all hooks getting the very last
+                mask! Getting it through another function forces early binding.
+                """
+
+                def hook(grads):
+                    return grads * keep_mask
+
+                return hook
+
+            # mask[i] == 0 --> Prune parameter
+            # mask[i] == 1 --> Keep parameter
+
+            # Step 1: Set the masked weights to zero (NB the biases are ignored)
+            # Step 2: Make sure their gradients remain zero
+            layer.weight.data[keep_mask == 0.] = 0.
+            layer.weight.register_hook(hook_factory(keep_mask))
+
+
 
     def _get_data(
         self, root: str, n_clients: int, n_shards: int, non_iid: int
@@ -85,6 +150,11 @@ class FedAvg:
             Tuple[nn.Module, float]: client model, average client loss.
         """
         model = copy.deepcopy(root_model)
+
+        # Pre-training pruning using SKIP
+        keep_masks = SNIP(model, 0.05, train_loader, device)  
+        self.apply_prune_mask(model, keep_masks)
+
         model.train()
         optimizer = torch.optim.SGD(
             model.parameters(), lr=self.args.lr, momentum=self.args.momentum
