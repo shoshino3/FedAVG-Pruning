@@ -66,7 +66,7 @@ class LeNet_300_100(nn.Module):
 
         self.fc1 = nn.Linear(784, 300)
         self.fc2 = nn.Linear(300, 100)
-        self.fc3 = nn.Linear(100, 10)76
+        self.fc3 = nn.Linear(100, 10)
 
     def forward(self, x):
         x = F.relu(self.fc1(x.view(-1, 784)))
