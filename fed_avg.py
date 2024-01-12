@@ -41,6 +41,7 @@ class FedAvg:
             self.target_acc = 0.99
         elif self.args.model_name == "vgg":
             self.root_model = vgg(dataset='cifar10', depth=19).to(self.device)
+            self.target_acc = 0.85
         else:
             raise ValueError(f"Invalid model name, {self.args.model_name}")
 
