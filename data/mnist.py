@@ -4,7 +4,7 @@ import torch
 from torchvision import datasets, transforms
 
 
-class MNISTDataset(datasets.CIFAR10):
+class MNISTDataset(datasets.CIFAR10): ##CIFAR10 class from dataset module
 
     N_CLASSES = 10
     def __init__(self, root: str, train: bool):

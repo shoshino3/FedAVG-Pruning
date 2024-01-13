@@ -1,0 +1,580 @@
+{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fmodern Consolas;}{\f1\fmodern\fcharset0 Consolas;}{\f2\fnil\fcharset129 Courier New;}}
+{\colortbl ;\red20\green20\blue20;\red142\green142\blue142;\red16\green158\blue98;\red148\green146\blue12;\red170\green51\blue170;\red170\green64\blue64;\red56\green136\blue159;}
+\viewkind4\uc1\pard\f0\fs20 khoshino@discovery.usc.edu's password:\cf1\highlight2 
+\par \cf0\highlight0     \u9484?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9488?\cf1\highlight2 
+\par \cf0\highlight0     \u9474?                 \cf3\f1\bullet  MobaXterm Personal Edition v23.2 \bullet\cf0\f0                  \u9474?\cf1\highlight2 
+\par \cf0\highlight0     \u9474?               \cf4 (SSH client, X server and network tools)\cf0                \u9474?\cf1\highlight2 
+\par \cf0\highlight0     \u9474?                                                                      \u9474?\cf1\highlight2 
+\par \cf0\highlight0     \u9474? \u11166? SSH session to \cf5 khoshino@discovery.usc.edu                \cf0           \u9474?\cf1\highlight2 
+\par \cf0\highlight0     \u9474?\f1    \bullet  Direct SSH      :  \cf3\f0\u10003?\cf0                                              \u9474?\cf1\highlight2 
+\par \cf0\highlight0     \u9474?\f1    \bullet  SSH compression :  \cf6\f0\u10007?\cf0   (disabled or not supported by server)      \u9474?\cf1\highlight2 
+\par \cf0\highlight0     \u9474?\f1    \bullet  SSH-browser     :  \cf3\f0\u10003?\cf0                                              \u9474?\cf1\highlight2 
+\par \cf0\highlight0     \u9474?\f1    \bullet  X11-forwarding  :  \cf3\f0\u10003?\cf0   (remote display is forwarded through SSH)  \u9474?\cf1\highlight2 
+\par \cf0\highlight0     \u9474?                                                                      \u9474?\cf1\highlight2 
+\par \cf0\highlight0     \u9474? \u11166? For more info, ctrl+click on \cf7\ul help\cf0\ulnone  or visit our \cf7\ul website\cf0\ulnone .            \u9474?\cf1\highlight2 
+\par \cf0\highlight0     \u9492?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9472?\u9496?\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Last login: Thu Jan 11 21:22:18 2024 from 10.21.33.157\cf1\highlight2 
+\par \cf0\highlight0 ------------------------------------------------------------------------------\cf1\highlight2 
+\par \cf0\highlight0          Welcome to the Center for Advanced Research Computing (CARC)\cf1\highlight2 
+\par \cf0\highlight0                 at the University of Southern California (USC)\cf1\highlight2 
+\par \cf0\highlight0 ------------------------------------------------------------------------------\cf1\highlight2 
+\par 
+\par \cf0\highlight0         CARC website : https://www.carc.usc.edu\cf1\highlight2 
+\par \cf0\highlight0         User support : https://www.carc.usc.edu/user-support\cf1\highlight2 
+\par \cf0\highlight0         User portal  : https://hpcaccount.usc.edu\cf1\highlight2 
+\par 
+\par \cf0\highlight0               ** Unauthorized use/access is prohibited **\cf1\highlight2 
+\par 
+\par \cf0\highlight0 If you log on to this computer system, you acknowledge your awareness of and\cf1\highlight2 
+\par \cf0\highlight0 concurrence with the USC CARC Acceptable Use Policy. USC will prosecute\cf1\highlight2 
+\par \cf0\highlight0 violators to the full extent of the law.\cf1\highlight2 
+\par 
+\par \cf0\highlight0 ------------------------------------------------------------------------------\cf1\highlight2 
+\par \cf0\highlight0 Attention: Accessing the cluster via the Remote SSH extension of VS Code may\cf1\highlight2 
+\par \cf0\highlight0 be blocked. Please use the SSH-FS extension instead.\cf1\highlight2 
+\par \cf0\highlight0 ------------------------------------------------------------------------------\cf1\highlight2 
+\par 
+\par 
+\par \cf0\highlight0 [khoshino@discovery1 ~]$ cd FedAvg\cf1\highlight2 
+\par \cf0\highlight0 [khoshino@discovery1 FedAvg]$ conda activate f_avg\cf1\highlight2 
+\par \cf0\highlight0 (f_avg) [khoshino@discovery1 FedAvg]$ salloc --partition=gpu --cpus-per-task=4 --mem=16G --gres=gpu:p100:1 --time=4:00:00\cf1\highlight2 
+\par \cf0\highlight0 salloc: Pending job allocation 18519475\cf1\highlight2 
+\par \cf0\highlight0 salloc: job 18519475 queued and waiting for resources\cf1\highlight2 
+\par \cf0\highlight0 salloc: job 18519475 has been allocated resources\cf1\highlight2 
+\par \cf0\highlight0 salloc: Granted job allocation 18519475\cf1\highlight2 
+\par \cf0\highlight0 [khoshino@e21-16 FedAvg]$ python fed_avg_.py --batch_size=10 --frac=0.1 --lr=0.01 --n_client_epochs=20 --n_clients=100 --n_ep--n_shards=200 --non_iid=0 --model="vgg"\cf1\highlight2 
+\par \cf0\highlight0 Files already downloaded and verified\cf1\highlight2 
+\par \cf0\highlight0 Files already downloaded and verified\cf1\highlight2 
+\par \cf0\highlight0 Client #31 | Epoch: 19/20 | Loss: 0.13673977305491766 | Acc: 1.028\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Results after 1 rounds of training:\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Training Loss: 0.011478211196760336\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Test Loss: 2.0157079436840157 | Avg Test Accuracy: 0.2822\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Best accuracy: 0.2822\cf1\highlight2 
+\par \cf0\highlight0 Client #42 | Epoch: 19/20 | Loss: 0.01918646724273761 | Acc: 1.00\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Results after 2 rounds of training:\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Training Loss: 0.006224649901657054\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Test Loss: 4.386164090572259 | Avg Test Accuracy: 0.131\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Best accuracy: 0.2822\cf1\highlight2 
+\par \cf0\highlight0 Client #80 | Epoch: 19/20 | Loss: 0.0092284488491714 | Acc: 1.0.0\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Results after 3 rounds of training:\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Training Loss: 0.004311801679949793\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Test Loss: 3.259982414734669 | Avg Test Accuracy: 0.2323\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Best accuracy: 0.2822\cf1\highlight2 
+\par \cf0\highlight0 Client #50 | Epoch: 19/20 | Loss: 0.0067459940910339355 | Acc: 1.0\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Results after 4 rounds of training:\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Training Loss: 0.0033187045630378026\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Test Loss: 3.3797391867026305 | Avg Test Accuracy: 0.2414\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Best accuracy: 0.2822\cf1\highlight2 
+\par \cf0\highlight0 [0.6998546511627908, 0.18713662790697672, 0.125, 0.07776162790697672]\cf1\highlight2 
+\par \cf0\highlight0 Client #93 | Epoch: 19/20 | Loss: 0.005626193480566144 | Acc: 1.00\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Results after 5 rounds of training:\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Training Loss: 0.0027089634266061085\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Test Loss: 2.497006046466338 | Avg Test Accuracy: 0.3382\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Best accuracy: 0.3382\cf1\highlight2 
+\par \cf0\highlight0 [0.19767441860465118, 0.14389534883720934, 0.10210755813953487, 0.06904069767441856]\cf1\highlight2 
+\par \cf0\highlight0 Client #35 | Epoch: 19/20 | Loss: 0.004719317890703678 | Acc: 1.00\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Results after 6 rounds of training:\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Training Loss: 0.0022938845861547935\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Test Loss: 2.3355021812976937 | Avg Test Accuracy: 0.3826\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Best accuracy: 0.3826\cf1\highlight2 
+\par \cf0\highlight0 [0.1522529069767442, 0.11736918604651159, 0.08466569767441856, 0.062136627906976716]\cf1\highlight2 
+\par \cf0\highlight0 Client #54 | Epoch: 19/20 | Loss: 0.0037580570206046104 | Acc: 1.0\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Results after 7 rounds of training:\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Training Loss: 0.001992696538911245\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Test Loss: 2.0492255886395774 | Avg Test Accuracy: 0.4244\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Best accuracy: 0.4244\cf1\highlight2 
+\par \cf0\highlight0 [0.12754360465116277, 0.0977470930232558, 0.07739825581395354, 0.0526889534883721]\cf1\highlight2 
+\par \cf0\highlight0 Client #94 | Epoch: 19/20 | Loss: 0.003310051979497075 | Acc: 1.00\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Results after 8 rounds of training:\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Training Loss: 0.0017643893401448924\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Test Loss: 2.082966997073247 | Avg Test Accuracy: 0.4382\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Best accuracy: 0.4382\cf1\highlight2 
+\par \cf0\highlight0 [0.10973837209302328, 0.09084302325581395, 0.0741279069767442, 0.057412790697674465]\cf1\highlight2 
+\par \cf0\highlight0 Client #33 | Epoch: 19/20 | Loss: 0.003133968294908603 | Acc: 1.00\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Results after 9 rounds of training:\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Training Loss: 0.001585074810901898\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Test Loss: 1.9630373257857103 | Avg Test Accuracy: 0.4597\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Best accuracy: 0.4597\cf1\highlight2 
+\par \cf0\highlight0 [0.10101744186046513, 0.08430232558139539, 0.07194767441860461, 0.05050872093023251]\cf1\highlight2 
+\par \cf0\highlight0 Client #61 | Epoch: 19/20 | Loss: 0.002657477317067484 | Acc: 1.00\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Results after 10 rounds of training:\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Training Loss: 0.001440962005329008\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Test Loss: 1.8895882734885583 | Avg Test Accuracy: 0.4697\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Best accuracy: 0.4697\cf1\highlight2 
+\par \cf0\highlight0 [0.09520348837209303, 0.08539244186046513, 0.06976744186046513, 0.04978197674418605]\cf1\highlight2 
+\par \cf0\highlight0 [early_bird_30] Find EB!!!!!!!!!, epoch: 10\cf1\highlight2 
+\par \cf0\highlight0 Client #37 | Epoch: 19/20 | Loss: 0.002301079143459598 | Acc: 1.00\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Results after 11 rounds of training:\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Training Loss: 0.0013218881865032018\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Test Loss: 1.5851896894283783 | Avg Test Accuracy: 0.5289\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Best accuracy: 0.5289\cf1\highlight2 
+\par \cf0\highlight0 [0.09556686046511631, 0.08175872093023251, 0.0664970930232558, 0.047238372093023284]\cf1\highlight2 
+\par \cf0\highlight0 Client #34 | Epoch: 19/20 | Loss: 0.002325881738215685 | Acc: 1.00\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Results after 12 rounds of training:\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Training Loss: 0.0012218671456018153\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Test Loss: 1.627120418426318 | Avg Test Accuracy: 0.5328\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Best accuracy: 0.5328\cf1\highlight2 
+\par \cf0\highlight0 [0.08938953488372092, 0.07376453488372092, 0.059229651162790664, 0.04033430232558144]\cf1\highlight2 
+\par \cf0\highlight0 Client #45 | Epoch: 19/20 | Loss: 0.002295453140201668 | Acc: 1.00\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Results after 13 rounds of training:\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Training Loss: 0.0011366908734915062\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Test Loss: 1.5743085100100591 | Avg Test Accuracy: 0.5365\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Best accuracy: 0.5365\cf1\highlight2 
+\par \cf0\highlight0 [0.08684593023255816, 0.07340116279069764, 0.061046511627906974, 0.04433139534883723]\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Client #66 | Epoch: 19/20 | Loss: 0.001792108523659408 | Acc: 1.00\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Results after 14 rounds of training:\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Training Loss: 0.0010627946332152488\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Test Loss: 1.500320587402735 | Avg Test Accuracy: 0.5704\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Best accuracy: 0.5704\cf1\highlight2 
+\par \cf0\highlight0 [0.07994186046511631, 0.06867732558139539, 0.055595930232558155, 0.0370639534883721]\cf1\highlight2 
+\par \cf0\highlight0 Client #96 | Epoch: 19/20 | Loss: 0.0017991859543447692 | Acc: 1.0\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Results after 15 rounds of training:\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Training Loss: 0.0009984612801733116\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Test Loss: 1.5567490336222527 | Avg Test Accuracy: 0.5535\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Best accuracy: 0.5704\cf1\highlight2 
+\par \cf0\highlight0 [0.07630813953488369, 0.06431686046511631, 0.051962209302325535, 0.04142441860465118]\cf1\highlight2 
+\par \cf0\highlight0 Client #24 | Epoch: 19/20 | Loss: 0.0018186224236463506 | Acc: 1.0\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Results after 16 rounds of training:\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Training Loss: 0.0009419201801695939\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Test Loss: 1.4310564994812012 | Avg Test Accuracy: 0.5836\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Best accuracy: 0.5836\cf1\highlight2 
+\par \cf0\highlight0 [0.0741279069767442, 0.0625, 0.05523255813953487, 0.0410610465116279]\cf1\highlight2 
+\par \cf0\highlight0 Client #17 | Epoch: 19/20 | Loss: 0.001383090120119353 | Acc: 1.00\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Results after 17 rounds of training:\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Training Loss: 0.000891443766863542\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Test Loss: 1.4755498919731531 | Avg Test Accuracy: 0.5785\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Best accuracy: 0.5836\cf1\highlight2 
+\par \cf0\highlight0 [0.07085755813953487, 0.06540697674418605, 0.05341569767441856, 0.03379360465116277]\cf1\highlight2 
+\par \cf0\highlight0 ^CTraceback (most recent call last):714118401209514 | Acc: 0.682.0\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/FedAvg/fed_avg_.py", line 315, in <module>\cf1\highlight2 
+\par \cf0\highlight0     fed_avg.train()\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/FedAvg/fed_avg_.py", line 220, in train\cf1\highlight2 
+\par \cf0\highlight0     client_model, opt_state, client_loss = self._train_client(\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/FedAvg/fed_avg_.py", line 116, in _train_client\cf1\highlight2 
+\par \cf0\highlight0     for idx, (data, target) in enumerate(train_loader):\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/.conda/envs/f_avg/lib/python3.9/site-packages/torch/utils/data/dataloader.py", line 681, in __next__\cf1\highlight2 
+\par \cf0\highlight0     data = self._next_data()\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/.conda/envs/f_avg/lib/python3.9/site-packages/torch/utils/data/dataloader.py", line 721, in _next_dat\cf1\highlight2 
+\par \cf0\highlight0     data = self._dataset_fetcher.fetch(index)  # may raise StopIteration\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/.conda/envs/f_avg/lib/python3.9/site-packages/torch/utils/data/_utils/fetch.py", line 49, in fetch\cf1\highlight2 
+\par \cf0\highlight0     data = [self.dataset[idx] for idx in possibly_batched_index]\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/.conda/envs/f_avg/lib/python3.9/site-packages/torch/utils/data/_utils/fetch.py", line 49, in <listcom\cf1\highlight2 
+\par \cf0\highlight0     data = [self.dataset[idx] for idx in possibly_batched_index]\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/FedAvg/data/mnist.py", line 21, in __getitem__\cf1\highlight2 
+\par \cf0\highlight0     x, y = super().__getitem__(index)  # This directly uses the parent class method\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/.conda/envs/f_avg/lib/python3.9/site-packages/torchvision/datasets/cifar.py", line 118, in __getitem_\cf1\highlight2 
+\par \cf0\highlight0     img = self.transform(img)\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/.conda/envs/f_avg/lib/python3.9/site-packages/torchvision/transforms/transforms.py", line 94, in __ca\cf1\highlight2 
+\par \cf0\highlight0     img = t(img)\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/.conda/envs/f_avg/lib/python3.9/site-packages/torchvision/transforms/transforms.py", line 134, in __c\cf1\highlight2 
+\par \cf0\highlight0     return F.to_tensor(pic)\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/.conda/envs/f_avg/lib/python3.9/site-packages/torchvision/transforms/functional.py", line 164, in to_\cf1\highlight2 
+\par \cf0\highlight0     img = torch.from_numpy(np.array(pic, mode_to_nptype.get(pic.mode, np.uint8), copy=True))\cf1\highlight2 
+\par \cf0\highlight0 TypeError: int() argument must be a string, a bytes-like object or a number, not 'Image'\cf1\highlight2 
+\par \cf0\highlight0 [khoshino@e21-16 FedAvg]$ conda activate f_avg\cf1\highlight2 
+\par \cf0\highlight0 (f_avg) [khoshino@e21-16 FedAvg]$ python fed_avg_.py --batch_size=10 --frac=0.1 --lr=0.01 --n_client_epochs=20 --n_clients=10hs=1000 --n_shards=200 --non_iid=0 --model="vgg"\cf1\highlight2 
+\par \cf0\highlight0 Files already downloaded and verified\cf1\highlight2 
+\par \cf0\highlight0 Files already downloaded and verified\cf1\highlight2 
+\par \cf0\highlight0 Client #96 | Epoch: 19/20 | Loss: 0.34781454503536224 | Acc: 1.084\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Results after 1 rounds of training:\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Training Loss: 0.012936617595454055\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Test Loss: 1.9636190212689912 | Avg Test Accuracy: 0.3088\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Best accuracy: 0.3088\cf1\highlight2 
+\par \cf0\highlight0 ^CTraceback (most recent call last):057590961456299 | Acc: 0.56.0\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/FedAvg/fed_avg_.py", line 315, in <module>\cf1\highlight2 
+\par \cf0\highlight0     fed_avg.train()\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/FedAvg/fed_avg_.py", line 220, in train\cf1\highlight2 
+\par \cf0\highlight0     client_model, opt_state, client_loss = self._train_client(\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/FedAvg/fed_avg_.py", line 125, in _train_client\cf1\highlight2 
+\par \cf0\highlight0     epoch_loss += loss.item()\cf1\highlight2 
+\par \cf0\highlight0 KeyboardInterrupt\cf1\highlight2 
+\par 
+\par \cf0\highlight0 (f_avg) [khoshino@e21-16 FedAvg]$ python fed_avg_.py --batch_size=10 --frac=0.1 --lr=0.01 --n_client_epochs=20 --n_clients=10hs=1000 --n_shards=200 --non_iid=0 --model="vgg"\cf1\highlight2 
+\par \cf0\highlight0 Files already downloaded and verified\cf1\highlight2 
+\par \cf0\highlight0 Files already downloaded and verified\cf1\highlight2 
+\par \cf0\highlight0 Client #63 | Epoch: 19/20 | Loss: 0.21168444802363715 | Acc: 1.088\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Results after 1 rounds of training:\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Training Loss: 0.010957881361246109\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Test Loss: 1.9955923511431768 | Avg Test Accuracy: 0.2959\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Best accuracy: 0.2959\cf1\highlight2 
+\par \cf0\highlight0 Client #94 | Epoch: 19/20 | Loss: 0.019013163323203724 | Acc: 1.0\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Results after 2 rounds of training:\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Training Loss: 0.005948067044373602\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Test Loss: 3.369198215313447 | Avg Test Accuracy: 0.1805\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Best accuracy: 0.2959\cf1\highlight2 
+\par \cf0\highlight0 Client #24 | Epoch: 19/20 | Loss: 0.00916133743400375 | Acc: 1.008\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Results after 3 rounds of training:\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Training Loss: 0.00412590154265571\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Test Loss: 2.9054674827135525 | Avg Test Accuracy: 0.251\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Best accuracy: 0.2959\cf1\highlight2 
+\par \cf0\highlight0 Client #87 | Epoch: 19/20 | Loss: 0.006514940566072862 | Acc: 1.00\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Results after 4 rounds of training:\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Training Loss: 0.0031782908235133316\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Test Loss: 2.3993739730272536 | Avg Test Accuracy: 0.3218\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Best accuracy: 0.3218\cf1\highlight2 
+\par \cf0\highlight0 [0.6998546511627908, 0.19585755813953487, 0.13408430232558144, 0.0821220930232558]\cf1\highlight2 
+\par \cf0\highlight0 Client #57 | Epoch: 19/20 | Loss: 0.005412687469894688 | Acc: 1.00\cf1\highlight2 
+\par 
+\par 
+\par 
+\par \cf0\highlight0 Results after 5 rounds of training:\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Training Loss: 0.002594978920184076\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Test Loss: 2.0975788220381126 | Avg Test Accuracy: 0.4014\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Best accuracy: 0.4014\cf1\highlight2 
+\par \cf0\highlight0 [0.2071220930232558, 0.15079941860465118, 0.10973837209302328, 0.06468023255813948]\cf1\highlight2 
+\par \cf0\highlight0 ^CTraceback (most recent call last):007583433762192726 | Acc: 1.0\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/FedAvg/fed_avg_.py", line 315, in <module>\cf1\highlight2 
+\par \cf0\highlight0     fed_avg.train()\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/FedAvg/fed_avg_.py", line 220, in train\cf1\highlight2 
+\par \cf0\highlight0     client_model, opt_state, client_loss = self._train_client(\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/FedAvg/fed_avg_.py", line 116, in _train_client\cf1\highlight2 
+\par \cf0\highlight0     for idx, (data, target) in enumerate(train_loader):\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/.conda/envs/f_avg/lib/python3.9/site-packages/torch/utils/data/dataloader.py", line 681, in __next__\cf1\highlight2 
+\par \cf0\highlight0     data = self._next_data()\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/.conda/envs/f_avg/lib/python3.9/site-packages/torch/utils/data/dataloader.py", line 721, in _next_dat\cf1\highlight2 
+\par \cf0\highlight0     data = self._dataset_fetcher.fetch(index)  # may raise StopIteration\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/.conda/envs/f_avg/lib/python3.9/site-packages/torch/utils/data/_utils/fetch.py", line 49, in fetch\cf1\highlight2 
+\par \cf0\highlight0     data = [self.dataset[idx] for idx in possibly_batched_index]\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/.conda/envs/f_avg/lib/python3.9/site-packages/torch/utils/data/_utils/fetch.py", line 49, in <listcom\cf1\highlight2 
+\par \cf0\highlight0     data = [self.dataset[idx] for idx in possibly_batched_index]\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/FedAvg/data/mnist.py", line 21, in __getitem__\cf1\highlight2 
+\par \cf0\highlight0     x, y = super().__getitem__(index)  # This directly uses the parent class method\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/.conda/envs/f_avg/lib/python3.9/site-packages/torchvision/datasets/cifar.py", line 118, in __getitem_\cf1\highlight2 
+\par \cf0\highlight0     img = self.transform(img)\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/.conda/envs/f_avg/lib/python3.9/site-packages/torchvision/transforms/transforms.py", line 94, in __ca\cf1\highlight2 
+\par \cf0\highlight0     img = t(img)\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/.conda/envs/f_avg/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1130, in _call_impl\cf1\highlight2 
+\par \cf0\highlight0     return forward_call(*input, **kwargs)\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/.conda/envs/f_avg/lib/python3.9/site-packages/torchvision/transforms/transforms.py", line 269, in for\cf1\highlight2 
+\par \cf0\highlight0     return F.normalize(tensor, self.mean, self.std, self.inplace)\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/.conda/envs/f_avg/lib/python3.9/site-packages/torchvision/transforms/functional.py", line 360, in nor\cf1\highlight2 
+\par \cf0\highlight0     return F_t.normalize(tensor, mean=mean, std=std, inplace=inplace)\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/.conda/envs/f_avg/lib/python3.9/site-packages/torchvision/transforms/functional_tensor.py", line 953,ize\cf1\highlight2 
+\par \cf0\highlight0     if (std == 0).any():\cf1\highlight2 
+\par \cf0\highlight0 KeyboardInterrupt\cf1\highlight2 
+\par 
+\par \cf0\highlight0 (f_avg) [khoshino@e21-16 FedAvg]$ python fed_avg_.py --batch_size=10 --frac=0.1 --lr=0.01 --n_client_epochs=20 --n_clients=100 --n_epochs=1000 --n_shards=200 --non_iid=0 --model="vgg"\cf1\highlight2 
+\par \cf0\highlight0 Files already downloaded and verified\cf1\highlight2 
+\par \cf0\highlight0 Files already downloaded and verified\cf1\highlight2 
+\par \cf0\highlight0 Client #48 | Epoch: 19/20 | Loss: 0.19628231972455978 | Acc: 1.026\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Results after 1 rounds of training:\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Training Loss: 0.009794625168045362\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Test Loss: 1.9787648488313725 | Avg Test Accuracy: 0.2975\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Best accuracy: 0.2975\cf1\highlight2 
+\par \cf0\highlight0 Client #8 | Epoch: 19/20 | Loss: 0.017656467234094936 | Acc: 1.00\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Results after 2 rounds of training:\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Training Loss: 0.00535226544054846\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Test Loss: 3.331454405417809 | Avg Test Accuracy: 0.1913\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Best accuracy: 0.2975\cf1\highlight2 
+\par \cf0\highlight0 Client #79 | Epoch: 19/20 | Loss: 0.009358565788716078 | Acc: 1.0\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Results after 3 rounds of training:\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Training Loss: 0.0037259283643733296\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Test Loss: 2.536424071360857 | Avg Test Accuracy: 0.2966\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Best accuracy: 0.2975\cf1\highlight2 
+\par \cf0\highlight0 Client #67 | Epoch: 19/20 | Loss: 0.006621077501525481 | Acc: 1.00\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Results after 4 rounds of training:\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Training Loss: 0.0028748617173793415\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Test Loss: 2.5475532030447936 | Avg Test Accuracy: 0.3013\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Best accuracy: 0.3013\cf1\highlight2 
+\par \cf0\highlight0 [0.6998546511627908, 0.1856831395348837, 0.12245639534883723, 0.08248546511627908]\cf1\highlight2 
+\par \cf0\highlight0 Client #81 | Epoch: 19/20 | Loss: 0.004952402863030632 | Acc: 1.00\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Results after 5 rounds of training:\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Training Loss: 0.0023499793134784943\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Test Loss: 2.1722954435226245 | Avg Test Accuracy: 0.3799\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Best accuracy: 0.3799\cf1\highlight2 
+\par \cf0\highlight0 [0.19476744186046513, 0.1369912790697675, 0.10138081395348841, 0.06431686046511631]\cf1\highlight2 
+\par \cf0\highlight0 Client #39 | Epoch: 19/20 | Loss: 0.0033291877868274846 | Acc: 1.0\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Results after 6 rounds of training:\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Training Loss: 0.001992419648514543\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Test Loss: 1.9674102740410047 | Avg Test Accuracy: 0.4235\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Best accuracy: 0.4235\cf1\highlight2 
+\par \cf0\highlight0 [0.15370639534883723, 0.11809593023255816, 0.08829941860465118, 0.05523255813953487]\cf1\highlight2 
+\par \cf0\highlight0 Client #12 | Epoch: 19/20 | Loss: 0.0038037681176016727 | Acc: 1.0\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Results after 7 rounds of training:\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Training Loss: 0.001733026329311542\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Test Loss: 1.7571141826800811 | Avg Test Accuracy: 0.4717\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Best accuracy: 0.4717\cf1\highlight2 
+\par \cf0\highlight0 [0.12718023255813948, 0.10210755813953487, 0.07630813953488369, 0.05850290697674421]\cf1\highlight2 
+\par \cf0\highlight0 Client #44 | Epoch: 19/20 | Loss: 0.0033726385639359555 | Acc: 1.0\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Results after 8 rounds of training:\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Training Loss: 0.001536529080525118\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Test Loss: 1.7934756523523576 | Avg Test Accuracy: 0.4714\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Best accuracy: 0.4717\cf1\highlight2 
+\par \cf0\highlight0 [0.11228197674418605, 0.09302325581395354, 0.07885174418604646, 0.05486918604651159]\cf1\highlight2 
+\par \cf0\highlight0 ^CTraceback (most recent call last):1670183924337228 | Acc: 1.0060\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/FedAvg/fed_avg_.py", line 316, in <module>\cf1\highlight2 
+\par \cf0\highlight0     fed_avg.train()\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/FedAvg/fed_avg_.py", line 221, in train\cf1\highlight2 
+\par \cf0\highlight0     client_model, opt_state, client_loss = self._train_client(\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/FedAvg/fed_avg_.py", line 116, in _train_client\cf1\highlight2 
+\par \cf0\highlight0     for idx, (data, target) in enumerate(train_loader):\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/.conda/envs/f_avg/lib/python3.9/site-packages/torch/utils/data/dataloader.py", line 681, in __next__\cf1\highlight2 
+\par \cf0\highlight0     data = self._next_data()\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/.conda/envs/f_avg/lib/python3.9/site-packages/torch/utils/data/dataloader.py", line 721, in _next_data\cf1\highlight2 
+\par \cf0\highlight0     data = self._dataset_fetcher.fetch(index)  # may raise StopIteration\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/.conda/envs/f_avg/lib/python3.9/site-packages/torch/utils/data/_utils/fetch.py", line 49, in fetch\cf1\highlight2 
+\par \cf0\highlight0     data = [self.dataset[idx] for idx in possibly_batched_index]\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/.conda/envs/f_avg/lib/python3.9/site-packages/torch/utils/data/_utils/fetch.py", line 49, in <listcomp>\cf1\highlight2 
+\par \cf0\highlight0     data = [self.dataset[idx] for idx in possibly_batched_index]\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/FedAvg/data/mnist.py", line 21, in __getitem__\cf1\highlight2 
+\par \cf0\highlight0     x, y = super().__getitem__(index)  # This directly uses the parent class method\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/.conda/envs/f_avg/lib/python3.9/site-packages/torchvision/datasets/cifar.py", line 118, in __getitem__\cf1\highlight2 
+\par \cf0\highlight0     img = self.transform(img)\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/.conda/envs/f_avg/lib/python3.9/site-packages/torchvision/transforms/transforms.py", line 94, in __call__\cf1\highlight2 
+\par \cf0\highlight0     img = t(img)\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/.conda/envs/f_avg/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1130, in _call_impl\cf1\highlight2 
+\par \cf0\highlight0     return forward_call(*input, **kwargs)\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/.conda/envs/f_avg/lib/python3.9/site-packages/torchvision/transforms/transforms.py", line 269, in forward\cf1\highlight2 
+\par \cf0\highlight0     return F.normalize(tensor, self.mean, self.std, self.inplace)\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/.conda/envs/f_avg/lib/python3.9/site-packages/torchvision/transforms/functional.py", line 360, in normalize\cf1\highlight2 
+\par \cf0\highlight0     return F_t.normalize(tensor, mean=mean, std=std, inplace=inplace)\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/.conda/envs/f_avg/lib/python3.9/site-packages/torchvision/transforms/functional_tensor.py", line 948, in normalize\cf1\highlight2 
+\par \cf0\highlight0     tensor = tensor.clone()\cf1\highlight2 
+\par \cf0\highlight0 KeyboardInterrupt\cf1\highlight2 
+\par 
+\par \cf0\highlight0 (f_avg) [khoshino@e21-16 FedAvg]$ python fed_avg_.py --batch_size=10 --frac=0.1 --lr=0.01 --n_client_epochs=20 --n_clients=100 --n_epochs=1000 --n_shards=200 --non_iid=0 --model="vgg"\cf1\highlight2 
+\par \cf0\highlight0 ^CTraceback (most recent call last):\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/FedAvg/fed_avg_.py", line 15, in <module>\cf1\highlight2 
+\par \cf0\highlight0     from utils import arg_parser, average_weights, Logger\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/FedAvg/utils.py", line 6, in <module>\cf1\highlight2 
+\par \cf0\highlight0     import wandb\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/.conda/envs/f_avg/lib/python3.9/site-packages/wandb/__init__.py", line 26, in <module>\cf1\highlight2 
+\par \cf0\highlight0     from wandb import sdk as wandb_sdk\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/.conda/envs/f_avg/lib/python3.9/site-packages/wandb/sdk/__init__.py", line 7, in <module>\cf1\highlight2 
+\par \cf0\highlight0     from .wandb_init import _attach, init  # noqa: F401\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/.conda/envs/f_avg/lib/python3.9/site-packages/wandb/sdk/wandb_init.py", line 31, in <module>\cf1\highlight2 
+\par \cf0\highlight0     from .backend.backend import Backend\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/.conda/envs/f_avg/lib/python3.9/site-packages/wandb/sdk/backend/backend.py", line 20, in <module>\cf1\highlight2 
+\par \cf0\highlight0     from ..internal.internal import wandb_internal\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/.conda/envs/f_avg/lib/python3.9/site-packages/wandb/sdk/internal/internal.py", line 34, in <module>\cf1\highlight2 
+\par \cf0\highlight0     from . import context, handler, internal_util, sender, settings_static, writer\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/.conda/envs/f_avg/lib/python3.9/site-packages/wandb/sdk/internal/handler.py", line 40, in <module>\cf1\highlight2 
+\par \cf0\highlight0     from .system.system_monitor import SystemMonitor\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/.conda/envs/f_avg/lib/python3.9/site-packages/wandb/sdk/internal/system/system_monitor.py", line 7, in <module>\cf1\highlight2 
+\par \cf0\highlight0     from .assets.asset_registry import asset_registry\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/.conda/envs/f_avg/lib/python3.9/site-packages/wandb/sdk/internal/system/assets/__init__.py", line 4, in <module>\cf1\highlight2 
+\par \cf0\highlight0     from .gpu import GPU  # noqa: F401\cf1\highlight2 
+\par \cf0\highlight0   File "<frozen importlib._bootstrap>", line 1007, in _find_and_load\cf1\highlight2 
+\par \cf0\highlight0   File "<frozen importlib._bootstrap>", line 986, in _find_and_load_unlocked\cf1\highlight2 
+\par \cf0\highlight0   File "<frozen importlib._bootstrap>", line 680, in _load_unlocked\cf1\highlight2 
+\par \cf0\highlight0   File "<frozen importlib._bootstrap_external>", line 846, in exec_module\cf1\highlight2 
+\par \cf0\highlight0   File "<frozen importlib._bootstrap_external>", line 935, in get_code\cf1\highlight2 
+\par \cf0\highlight0   File "<frozen importlib._bootstrap_external>", line 1079, in path_stats\cf1\highlight2 
+\par \cf0\highlight0   File "<frozen importlib._bootstrap_external>", line 142, in _path_stat\cf1\highlight2 
+\par \cf0\highlight0 KeyboardInterrupt\cf1\highlight2 
+\par 
+\par \cf0\highlight0 (f_avg) [khoshino@e21-16 FedAvg]$ python fed_avg_.py --batch_size=10 --frac=0.1 --lr=0.01 --n_client_epochs=20 --n_clients=100 --n_epochs=1000 --n_shards=200 --non_iid=0 --model="vgg"\cf1\highlight2 
+\par \cf0\highlight0 Files already downloaded and verified\cf1\highlight2 
+\par \cf0\highlight0 Files already downloaded and verified\cf1\highlight2 
+\par \cf0\highlight0 Client #40 | Epoch: 19/20 | Loss: 0.13911747684081396 | Acc: 1.02\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Results after 1 rounds of training:\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Training Loss: 0.010467511427899203\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Test Loss: 1.9741596778233845 | Avg Test Accuracy: 0.2902\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Best accuracy: 0.2902\cf1\highlight2 
+\par \cf0\highlight0 Client #64 | Epoch: 19/20 | Loss: 0.017240827903151512 | Acc: 1.0\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Results after 2 rounds of training:\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Training Loss: 0.005687327242145936\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Test Loss: 3.0609123003788485 | Avg Test Accuracy: 0.1927\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Best accuracy: 0.2902\cf1\highlight2 
+\par \cf0\highlight0 Client #18 | Epoch: 19/20 | Loss: 0.009549799530456463 | Acc: 1.0\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Results after 3 rounds of training:\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Training Loss: 0.003952209012738119\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Test Loss: 2.856734016002753 | Avg Test Accuracy: 0.2384\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Best accuracy: 0.2902\cf1\highlight2 
+\par \cf0\highlight0 Client #35 | Epoch: 19/20 | Loss: 0.006557584274560213 | Acc: 1.00\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Results after 4 rounds of training:\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Training Loss: 0.0030471438867971305\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Test Loss: 2.602674044095553 | Avg Test Accuracy: 0.2938\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Best accuracy: 0.2938\cf1\highlight2 
+\par \cf0\highlight0 [0.6998546511627908, 0.19313226744186052, 0.1286337209302325, 0.08103197674418605]\cf1\highlight2 
+\par \cf0\highlight0 Client #73 | Epoch: 19/20 | Loss: 0.0053185100356737776 | Acc: 1.0\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Results after 5 rounds of training:\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Training Loss: 0.002488087700757509\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Test Loss: 2.359043381153009 | Avg Test Accuracy: 0.34\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Best accuracy: 0.34\cf1\highlight2 
+\par \cf0\highlight0 [0.20257994186046513, 0.14789244186046513, 0.10428779069767447, 0.06976744186046513]\cf1\highlight2 
+\par \cf0\highlight0 Client #16 | Epoch: 19/20 | Loss: 0.004345466538021962 | Acc: 1.00\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Results after 6 rounds of training:\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Training Loss: 0.0021090726905579993\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Test Loss: 2.025173367598118 | Avg Test Accuracy: 0.4022\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Best accuracy: 0.4022\cf1\highlight2 
+\par \cf0\highlight0 [0.16097383720930236, 0.1210029069767442, 0.09629360465116277, 0.06613372093023251]\cf1\highlight2 
+\par \cf0\highlight0 Client #36 | Epoch: 19/20 | Loss: 0.003946889579916994 | Acc: 1.00\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Results after 7 rounds of training:\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Training Loss: 0.0018344024209017381\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Test Loss: 1.9691879917413762 | Avg Test Accuracy: 0.4258\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Best accuracy: 0.4258\cf1\highlight2 
+\par \cf0\highlight0 [0.12354651162790697, 0.11010174418604646, 0.08575581395348841, 0.061046511627906974]\cf1\highlight2 
+\par \cf0\highlight0 Client #6 | Epoch: 19/20 | Loss: 0.0030668536201119423 | Acc: 1.00\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Results after 8 rounds of training:\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Training Loss: 0.0016257561309127296\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Test Loss: 1.880934747365805 | Avg Test Accuracy: 0.4515\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Best accuracy: 0.4515\cf1\highlight2 
+\par \cf0\highlight0 [0.11882267441860461, 0.09883720930232553, 0.07994186046511631, 0.057412790697674465]\cf1\highlight2 
+\par \cf0\highlight0 Client #69 | Epoch: 19/20 | Loss: 0.003054570018624266 | Acc: 1.00\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Results after 9 rounds of training:\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Training Loss: 0.0014613110012659393\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Test Loss: 1.8053641533240294 | Avg Test Accuracy: 0.4756\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Best accuracy: 0.4756\cf1\highlight2 
+\par \cf0\highlight0 [0.10792151162790697, 0.09011627906976749, 0.07340116279069764, 0.05523255813953487]\cf1\highlight2 
+\par \cf0\highlight0 Client #17 | Epoch: 19/20 | Loss: 0.002821951910542945 | Acc: 1.00\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Results after 10 rounds of training:\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Training Loss: 0.001328547764918767\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Test Loss: 1.7640023414905255 | Avg Test Accuracy: 0.4865\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Best accuracy: 0.4865\cf1\highlight2 
+\par \cf0\highlight0 [0.10210755813953487, 0.08866279069767447, 0.06795058139534882, 0.05123546511627908]\cf1\highlight2 
+\par \cf0\highlight0 Client #19 | Epoch: 19/20 | Loss: 0.0026132746522004404 | Acc: 1.0\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Results after 11 rounds of training:\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Training Loss: 0.001219330372881483\cf1\highlight2 
+\par \cf0\highlight0 ---> Avg Test Loss: 1.6399622651246877 | Avg Test Accuracy: 0.5159\cf1\highlight2 
+\par 
+\par \cf0\highlight0 Best accuracy: 0.5159\cf1\highlight2 
+\par \cf0\highlight0 [0.09447674418604646, 0.0839389534883721, 0.06976744186046513, 0.046875]\cf1\highlight2 
+\par \cf0\highlight0 [early_bird_30] Find EB!!!!!!!!!, epoch: 11\cf1\highlight2 
+\par \cf0\highlight0 ^CTraceback (most recent call last):0027273109881207347 | Acc: 1.0\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/FedAvg/fed_avg_.py", line 316, in <module>\cf1\highlight2 
+\par \cf0\highlight0     fed_avg.train()\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/FedAvg/fed_avg_.py", line 221, in train\cf1\highlight2 
+\par \cf0\highlight0     client_model, opt_state, client_loss = self._train_client(\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/FedAvg/fed_avg_.py", line 116, in _train_client\cf1\highlight2 
+\par \cf0\highlight0     for idx, (data, target) in enumerate(train_loader):\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/.conda/envs/f_avg/lib/python3.9/site-packages/torch/utils/data/dataloader.py", line 681, in __next__\cf1\highlight2 
+\par \cf0\highlight0     data = self._next_data()\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/.conda/envs/f_avg/lib/python3.9/site-packages/torch/utils/data/dataloader.py", line 721, in _next_data\cf1\highlight2 
+\par \cf0\highlight0     data = self._dataset_fetcher.fetch(index)  # may raise StopIteration\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/.conda/envs/f_avg/lib/python3.9/site-packages/torch/utils/data/_utils/fetch.py", line 49, in fetch\cf1\highlight2 
+\par \cf0\highlight0     data = [self.dataset[idx] for idx in possibly_batched_index]\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/.conda/envs/f_avg/lib/python3.9/site-packages/torch/utils/data/_utils/fetch.py", line 49, in <listcomp>\cf1\highlight2 
+\par \cf0\highlight0     data = [self.dataset[idx] for idx in possibly_batched_index]\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/FedAvg/data/mnist.py", line 21, in __getitem__\cf1\highlight2 
+\par \cf0\highlight0     x, y = super().__getitem__(index)  # This directly uses the parent class method\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/.conda/envs/f_avg/lib/python3.9/site-packages/torchvision/datasets/cifar.py", line 118, in __getitem__\cf1\highlight2 
+\par \cf0\highlight0     img = self.transform(img)\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/.conda/envs/f_avg/lib/python3.9/site-packages/torchvision/transforms/transforms.py", line 94, in __call__\cf1\highlight2 
+\par \cf0\highlight0     img = t(img)\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/.conda/envs/f_avg/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1130, in _call_impl\cf1\highlight2 
+\par \cf0\highlight0     return forward_call(*input, **kwargs)\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/.conda/envs/f_avg/lib/python3.9/site-packages/torchvision/transforms/transforms.py", line 269, in forward\cf1\highlight2 
+\par \cf0\highlight0     return F.normalize(tensor, self.mean, self.std, self.inplace)\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/.conda/envs/f_avg/lib/python3.9/site-packages/torchvision/transforms/functional.py", line 360, in normalize\cf1\highlight2 
+\par \cf0\highlight0     return F_t.normalize(tensor, mean=mean, std=std, inplace=inplace)\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/.conda/envs/f_avg/lib/python3.9/site-packages/torchvision/transforms/functional_tensor.py", line 953, in normalize\cf1\highlight2 
+\par \cf0\highlight0     if (std == 0).any():\cf1\highlight2 
+\par \cf0\highlight0 KeyboardInterrupt\cf1\highlight2 
+\par 
+\par \cf0\highlight0 (f_avg) [khoshino@e21-16 FedAvg]$ python fed_avg_early_bird.py --batch_size=10 --frac=0.1 --lr=0.01 --n_client_epochs=20 --n_clients=100 --n_epochs=1000 --n_shards=200 --non_iid=0 --model="vgg"\cf1\highlight2 
+\par \cf0\highlight0 Files already downloaded and verified\cf1\highlight2 
+\par \cf0\highlight0 Files already downloaded and verified\cf1\highlight2 
+\par \cf0\highlight0 Traceback (most recent call last):0.21454741060733795 | Acc: 1.088\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/FedAvg/fed_avg_early_bird.py", line 318, in <module>\cf1\highlight2 
+\par \cf0\highlight0     fed_avg.train()\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/FedAvg/fed_avg_early_bird.py", line 241, in train\cf1\highlight2 
+\par \cf0\highlight0     self.save_checkpoint(\{\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/FedAvg/fed_avg_early_bird.py", line 150, in save_checkpoint\cf1\highlight2 
+\par \cf0\highlight0     full_file_path = os.path.join(filepath, filename)\cf1\highlight2 
+\par \cf0\highlight0 UnboundLocalError: local variable 'filename' referenced before assignment\cf1\highlight2 
+\par \cf0\highlight0 (f_avg) [khoshino@e21-16 FedAvg]$ python fed_avg_early_bird.py --batch_size=10 --frac=0.1 --lr=0.01 --n_client_epochs=20 --n_clients=100 --n_epochs=1000 --n_shards=200 --non_iid=0 --model="vgg"\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/FedAvg/fed_avg_early_bird.py", line 150\cf1\highlight2 
+\par \cf0\highlight0     full_file_path = os.path.join(filepath, filename)\cf1\highlight2 
+\par \cf0\highlight0                                                      ^\cf1\highlight2 
+\par \cf0\highlight0 IndentationError: unindent does not match any outer indentation level\cf1\highlight2 
+\par \cf0\highlight0 (f_avg) [khoshino@e21-16 FedAvg]$ python fed_avg_early_bird.py --batch_size=10 --frac=0.1 --lr=0.01 --n_client_epochs=20 --n_clients=100 --n_epochs=1000 --n_shards=200 --non_iid=0 --model="vgg"\cf1\highlight2 
+\par \cf0\highlight0 Files already downloaded and verified\cf1\highlight2 
+\par \cf0\highlight0 Files already downloaded and verified\cf1\highlight2 
+\par \cf0\highlight0 saving the new best model...Loss: 0.3069288680950801 | Acc: 1.008\cf1\highlight2 
+\par \cf0\highlight0 Traceback (most recent call last):\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/FedAvg/fed_avg_early_bird.py", line 318, in <module>\cf1\highlight2 
+\par \cf0\highlight0     fed_avg.train()\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/FedAvg/fed_avg_early_bird.py", line 241, in train\cf1\highlight2 
+\par \cf0\highlight0     self.save_checkpoint(\{\cf1\highlight2 
+\par \cf0\highlight0   File "/home1/khoshino/FedAvg/fed_avg_early_bird.py", line 155, in save_checkpoint\cf1\highlight2 
+\par \cf0\highlight0     shutil.copyfile(full_file_path, os.path.join(filepath, 'model_best.pth.tar'))\cf1\highlight2 
+\par \cf0\highlight0 UnboundLocalError: local variable 'full_file_path' referenced before assignment\cf1\highlight2 
+\par \cf0\highlight0 (f_avg) [khoshino@e21-16 FedAvg]$\cf1\highlight2 
+\par \pard\cf0\highlight0\f2 
+\par }
+ 
