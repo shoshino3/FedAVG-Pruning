@@ -148,7 +148,7 @@ class FedAvg:
   
       # Check if Early Bird checkpoint
       if eb_flag:
-          filename = f'EB-30-{epoch}.pth.tar'
+          filename = f'EB-30-{epoch+1}.pth.tar'
           full_file_path = os.path.join(filepath, filename)
           torch.save(state, full_file_path)
           print(f"\nSaving Early Bird checkpoint for epoch {epoch+1}...!")
