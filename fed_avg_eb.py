@@ -142,13 +142,7 @@ class FedAvg:
         
     def save_checkpoint(self, state, is_best, epoch, filepath, eb_flag=False):
     
-      """Save a model checkpoint.
-      
-      1) when new best model found , it prints "Saving the new best model at epoch {epoch+1} "
-      2) when early bird found, it prints "Saving Early Bird Checkpoint for epoch {epoch+1}"
-      3) when new best model as well as early bird , it prints "Saving the new best model at epoch {epoch+1}"
-      
-      """
+
       # Create the directory if it does not exist
       if not os.path.exists(filepath):
           os.makedirs(filepath)
