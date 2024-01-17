@@ -26,7 +26,7 @@ class FedAvg:
         self.device = torch.device(
             f"cuda:{args.device}" if torch.cuda.is_available() else "cpu"
         )
-       
+        self.eb_model = None ##added
         # Loading training and testing dataset and is processed for clients to receive their own dataset
         self.train_loader, self.test_loader = self._get_data(
             root=self.args.data_root,
@@ -50,6 +50,7 @@ class FedAvg:
         elif self.args.model_name == "vgg":
             self.root_model = vgg(dataset='cifar10', depth=19).to(self.device)
             self.target_acc = 0.85
+            print("using vgg..")
             
         else:
             raise ValueError(f"Invalid model name, {self.args.model_name}")
@@ -160,7 +161,7 @@ class FedAvg:
           torch.save(state, full_file_path)
           print(f"\nSaving the new best model at epoch {epoch+1}...!")
 
-    def train(self) -> None:
+    def train(self, pre_eb = True) -> None:
         """Train a server model."""
         train_losses = []
         best_prec1 = 0.0
@@ -168,6 +169,7 @@ class FedAvg:
    
         early_bird_30 = EarlyBird(0.3)
         flag_30 = True
+  
 
         for epoch in range(self.args.n_epochs):
             
@@ -182,7 +184,7 @@ class FedAvg:
             idx_clients = np.random.choice(range(self.args.n_clients), m, replace=False)
 
             ##after 4 epochs, this 'if' clause gets executed and runs only once.
-            if early_bird_30.early_bird_emerge(self.root_model) and flag_30: 
+            if pre_eb and early_bird_30.early_bird_emerge(self.root_model) and flag_30: 
                 print("[early_bird_30] Found EB at epoch: "+str(epoch+1))
                 self.save_checkpoint({
                     'epoch': epoch,
@@ -191,6 +193,7 @@ class FedAvg:
                     'optimizer': opt_state
                 }, self.is_best, epoch, filepath=self.args.save, eb_flag = True)
                 flag_30 = False
+        
             
             
             for client_idx in idx_clients:
@@ -243,7 +246,8 @@ class FedAvg:
                 if self.args.early_stopping and self.reached_target_at is not None:
                     print(f"\nEarly stopping at round #{epoch}...")
                     break
-
+            
+            
     def test(self) -> Tuple[float, float]:
         """Test the server model.
 
@@ -271,9 +275,66 @@ class FedAvg:
         total_acc = total_correct / total_samples
 
         return total_loss, total_acc
+    
+    def actual_prune(self):
+        eb_model = './logs/EB-30-12.pth.tar'
+        if os.path.isfile(eb_model):
+            print("=> loading checkpoint '{}'".format(eb_model))
+            checkpoint = torch.load(eb_model)
+            self.root_model.load_state_dict(checkpoint['state_dict'])
+            # print("=> loaded checkpoint '{}' (epoch {}) Prec1: {:f}"
+                # .format(args.model, checkpoint['epoch'], best_prec1))
+        else:
+            print("=> no checkpoint found at '{}'".format(eb_model))
+            exit()
+            
+        total = 0 ##to store the total number of weights in all the bn layers
+        for m in self.root_model.modules():
+            if isinstance(m, nn.BatchNorm2d):
+                total += m.weight.data.shape[0]
 
+        # get the threshold index for each channel
+        bn = torch.zeros(total)
+        index = 0 
+        for m in self.root_model.modules():
+            if isinstance(m, nn.BatchNorm2d):
+                size = m.weight.data.shape[0]
+                bn[index:(index+size)] = m.weight.data.abs().clone()
+                index += size        
+        y, _ = torch.sort(bn)
+        thre_index = int(total * 0.3)
+        thre = y[thre_index]
+        
+        cfg = [] ##number of remaining channels
+        cfg_mask = [] ##mask for each layer
+        
+        pruned = 0
+        
+        #pruning starts
+        for k, m in enumerate(self.root_model.modules()):
+            if isinstance(m, nn.BatchNorm2d) or isinstance(m, nn.BatchNorm1d):
+                weight_copy = m.weight.data.abs().clone() # copy the absolute values of the weight
+                mask = weight_copy.gt(thre.cuda()).float().cuda() # entering 1 (if above thre) else 0
+                pruned = pruned + mask.shape[0] - torch.sum(mask) # no. of pruned channels
+                m.weight.data.mul_(mask) # put mask on the weights
+                m.bias.data.mul_(mask) # put mask on the bias
+                
+                if int(torch.sum(mask)) > 0:
+                    cfg.append(int(torch.sum(mask))) # append the count of retained weights
+                cfg_mask.append(mask.clone()) ##append the mask for each layer
+                
+                print('layer index: {:d} \t total channel: {:d} \t remaining channel: {:d}'.
+                    format(k, mask.shape[0], int(torch.sum(mask))))
+                
+            elif isinstance(m, nn.MaxPool2d):
+                cfg.append('M')
+    
 
 if __name__ == "__main__":
     args = arg_parser()
     fed_avg = FedAvg(args)
-    fed_avg.train()
+    fed_avg.train() 
+    print("EB was drawn, finished running...pruning starts now")
+    fed_avg.actual_prune()
+    print("Done pruning... training again")
+    fed_avg.train(pre_eb=False)
