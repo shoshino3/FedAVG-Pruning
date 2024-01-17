@@ -55,5 +55,6 @@ def arg_parser() -> argparse.ArgumentParser:
     parser.add_argument("--wandb", type=bool, default=False)
     parser.add_argument("--wandb_project", type=str, default="FedAvg")
     parser.add_argument("--exp_name", type=str, default="exp")
-
+    parser.add_argument('--save', default='./logs', type=str, metavar='PATH',
+                    help='path to save prune model (default: current directory)')
     return parser.parse_args()
