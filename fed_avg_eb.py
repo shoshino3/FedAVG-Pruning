@@ -23,6 +23,7 @@ class FedAvg:
     def __init__(self, args: Dict[str, Any]):
         self.args = args
         self.schedule = [80,120]
+        self.eb_epoch = 0
         self.device = torch.device(
             f"cuda:{args.device}" if torch.cuda.is_available() else "cpu"
         )
@@ -142,7 +143,13 @@ class FedAvg:
         
     def save_checkpoint(self, state, is_best, epoch, filepath, eb_flag=False):
     
-
+      """Save a model checkpoint.
+      
+      1) when new best model found , it prints "Saving the new best model at epoch {epoch+1} "
+      2) when early bird found, it prints "Saving Early Bird Checkpoint for epoch {epoch+1}"
+      3) when new best model as well as early bird , it prints "Saving the new best model at epoch {epoch+1}"
+      
+      """
       # Create the directory if it does not exist
       if not os.path.exists(filepath):
           os.makedirs(filepath)
@@ -166,10 +173,9 @@ class FedAvg:
         train_losses = []
         best_prec1 = 0.0
 
-   
+        found_eb = False
         early_bird_30 = EarlyBird(0.3)
         flag_30 = True
-  
 
         for epoch in range(self.args.n_epochs):
             
@@ -193,7 +199,11 @@ class FedAvg:
                     'optimizer': opt_state
                 }, self.is_best, epoch, filepath=self.args.save, eb_flag = True)
                 flag_30 = False
-        
+                self.eb_epoch = epoch + 1
+                found_eb = True
+                
+            if(found_eb == True): #stop training once eb found so we can prune
+              return
             
             
             for client_idx in idx_clients:
@@ -246,8 +256,7 @@ class FedAvg:
                 if self.args.early_stopping and self.reached_target_at is not None:
                     print(f"\nEarly stopping at round #{epoch}...")
                     break
-            
-            
+
     def test(self) -> Tuple[float, float]:
         """Test the server model.
 
@@ -277,7 +286,9 @@ class FedAvg:
         return total_loss, total_acc
     
     def actual_prune(self):
-        eb_model = './logs/EB-30-12.pth.tar'
+        #eb_model = './logs/EB-30-10.pth.tar'
+        eb_model = f'./logs/EB-30-{self.eb_epoch}.pth.tar'
+        
         if os.path.isfile(eb_model):
             print("=> loading checkpoint '{}'".format(eb_model))
             checkpoint = torch.load(eb_model)
@@ -334,7 +345,7 @@ if __name__ == "__main__":
     args = arg_parser()
     fed_avg = FedAvg(args)
     fed_avg.train() 
-    print("EB was drawn, finished running...pruning starts now")
+    print("EB was drawn...pruning starts now")
     fed_avg.actual_prune()
     print("Done pruning... training again")
     fed_avg.train(pre_eb=False)
