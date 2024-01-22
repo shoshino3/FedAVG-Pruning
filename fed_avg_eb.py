@@ -170,6 +170,7 @@ class FedAvg:
 
     def train(self, pre_eb = True) -> None:
         """Train a server model."""
+  
         train_losses = []
         best_prec1 = 0.0
 
@@ -285,6 +286,18 @@ class FedAvg:
 
         return total_loss, total_acc
     
+    def count_zero_weights(self, s = ""):
+        print(s)
+        zero_channel_count = 0
+
+        for layer in self.root_model.modules():
+            if isinstance(layer, nn.BatchNorm2d) or isinstance(layer, nn.BatchNorm1d):
+
+                zero_weights = layer.weight == 0
+                zero_channel_count += torch.sum(zero_weights).item()
+        
+        print("Number of zero channels: ", zero_channel_count)
+
     def actual_prune(self):
         #eb_model = './logs/EB-30-10.pth.tar'
         eb_model = f'./logs/EB-30-{self.eb_epoch}.pth.tar'
@@ -293,12 +306,11 @@ class FedAvg:
             print("=> loading checkpoint '{}'".format(eb_model))
             checkpoint = torch.load(eb_model)
             self.root_model.load_state_dict(checkpoint['state_dict'])
-            # print("=> loaded checkpoint '{}' (epoch {}) Prec1: {:f}"
-                # .format(args.model, checkpoint['epoch'], best_prec1))
+
         else:
             print("=> no checkpoint found at '{}'".format(eb_model))
             exit()
-            
+        
         total = 0 ##to store the total number of weights in all the bn layers
         for m in self.root_model.modules():
             if isinstance(m, nn.BatchNorm2d):
@@ -313,7 +325,7 @@ class FedAvg:
                 bn[index:(index+size)] = m.weight.data.abs().clone()
                 index += size        
         y, _ = torch.sort(bn)
-        thre_index = int(total * 0.3)
+        thre_index = int(total * 0.3) # 0.3 since pruning weight is 0.3
         thre = y[thre_index]
         
         cfg = [] ##number of remaining channels
@@ -321,7 +333,7 @@ class FedAvg:
         
         pruned = 0
         
-        #pruning starts
+        # PART I: pruning pre-processing starts
         for k, m in enumerate(self.root_model.modules()):
             if isinstance(m, nn.BatchNorm2d) or isinstance(m, nn.BatchNorm1d):
                 weight_copy = m.weight.data.abs().clone() # copy the absolute values of the weight
@@ -339,7 +351,67 @@ class FedAvg:
                 
             elif isinstance(m, nn.MaxPool2d):
                 cfg.append('M')
-    
+        
+        #count the number of zero channels: 
+        print(cfg)
+        self.count_zero_weights(s = "Before removing zeroed out channels") 
+        
+        # PART II: actual pruning where zeroed weights (channels) are excluded. 
+        
+        layer_id_in_cfg = 0
+        start_mask = torch.ones(3)
+        end_mask = cfg_mask[layer_id_in_cfg]
+        
+        newmodel = vgg(dataset='cifar10', cfg = cfg)
+
+        for [m0, m1] in zip(self.root_model.modules(), newmodel.modules()): 
+            
+            if isinstance(m0, nn.BatchNorm2d):
+                if torch.sum(end_mask) == 0:
+                    continue
+                idx1 = np.squeeze(np.argwhere(np.asarray(end_mask.cpu().numpy())))
+                if idx1.size == 1:
+                    idx1 = np.resize(idx1,(1,))
+                m1.weight.data = m0.weight.data[idx1.tolist()].clone()
+                m1.bias.data = m0.bias.data[idx1.tolist()].clone()
+                m1.running_mean = m0.running_mean[idx1.tolist()].clone() 
+                m1.running_var = m0.running_var[idx1.tolist()].clone()
+                layer_id_in_cfg += 1
+                start_mask = end_mask.clone()
+                if layer_id_in_cfg < len(cfg_mask):  # do not change in Final FC
+                    end_mask = cfg_mask[layer_id_in_cfg]
+                    
+            elif isinstance(m0, nn.Conv2d):
+                if torch.sum(end_mask) == 0:
+                    continue
+                idx0 = np.squeeze(np.argwhere(np.asarray(start_mask.cpu().numpy())))
+                idx1 = np.squeeze(np.argwhere(np.asarray(end_mask.cpu().numpy())))
+                
+                print('In shape: {:d}, Out shape {:d}.'.format(idx0.size, idx1.size))
+                if idx0.size == 1:
+                    idx0 = np.resize(idx0, (1,))
+                if idx1.size == 1:
+                    idx1 = np.resize(idx1, (1,))
+                w1 = m0.weight.data[:, idx0.tolist(), :, :].clone()
+                w1 = w1[idx1.tolist(), :, :, :].clone()
+                m1.weight.data = w1.clone()
+                
+            elif isinstance(m0, nn.Linear):
+                idx0 = np.squeeze(np.argwhere(np.asarray(start_mask.cpu().numpy())))
+                if idx0.size == 1:
+                    idx0 = np.resize(idx0, (1,))
+                m1.weight.data = m0.weight.data[:, idx0].clone()
+                m1.bias.data = m0.bias.data.clone()
+
+        self.root_model = copy.deepcopy(newmodel)
+        
+        self.count_zero_weights(s="After removing zeroed out channels")
+        
+        torch.save({'cfg': cfg, 'state_dict': newmodel.state_dict()}, os.path.join(self.args.save, 'pruned.pth.tar'))
+
+
+        
+        
 
 if __name__ == "__main__":
     args = arg_parser()
