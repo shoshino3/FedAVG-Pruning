@@ -273,7 +273,7 @@ def mnist_experiment():
 def cifar10_experiment():
 
     BATCH_SIZE = 128
-    LR_DECAY_INTERVAL = 30000
+    LR_DECAY_INTERVAL = 100
 
     net = VGG_SNIP('D').to(device)
 
@@ -283,7 +283,7 @@ def cifar10_experiment():
         momentum=0.9,
         weight_decay=WEIGHT_DECAY_RATE)
     lr_scheduler = optim.lr_scheduler.StepLR(
-        optimiser, LR_DECAY_INTERVAL, gamma=0.1)
+        optimiser, LR_DECAY_INTERVAL, gamma=0.05)
 
     train_loader, val_loader = get_cifar10_dataloaders(BATCH_SIZE,
                                                        BATCH_SIZE)  # TODO
