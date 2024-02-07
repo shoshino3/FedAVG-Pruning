@@ -6,6 +6,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.utils.data import DataLoader
 import math
+import os
 
 from data import MNISTDataset, FederatedSampler
 from models import CNN, MLP, vgg
@@ -240,6 +241,23 @@ def cifar10_experiment():
     return net, optimiser, lr_scheduler, train_loader, val_loader
     
 
+# class FedAvg:
+    # """Implementation of FedAvg
+    # http://proceedings.mlr.press/v54/mcmahan17a/mcmahan17a.pdf
+    # """
+
+    # def __init__(self, args: Dict[str, Any]):
+    #     self.args = args
+    #     self.max_accuracy = 0
+    #     self.device = torch.device(
+    #         f"cuda:{args.device}" if torch.cuda.is_available() else "cpu"
+    #     )
+    #     self.logger = Logger(args)
+    #     # self.results_file = "pruning.txt"
+    #     self.results_file = os.path.join(os.getcwd(), "results_file.txt")
+
+import os
+
 class FedAvg:
     """Implementation of FedAvg
     http://proceedings.mlr.press/v54/mcmahan17a/mcmahan17a.pdf
@@ -252,7 +270,8 @@ class FedAvg:
             f"cuda:{args.device}" if torch.cuda.is_available() else "cpu"
         )
         self.logger = Logger(args)
-        self.results_file = "pruning.txt"
+        # self.results_file = os.path.join(os.getcwd(), "results_file.txt")
+
         round = self.args.n_client_epochs
 
         self.train_loader, self.test_loader = self._get_data(
@@ -279,7 +298,7 @@ class FedAvg:
         self.reached_target_at = None  # type: int
 
         # Open the results file for writing
-        self.results_file = open(self.results_file, 'w')
+        # self.results_file = open(self.results_file, 'w')
 
 
 
@@ -459,7 +478,7 @@ class FedAvg:
                 )
                 
                 # Open the results file in append mode and write the results
-                with open(self.results_file, 'a') as results_file:
+                with open("res.txt", 'a') as results_file:
                     results_file.write(f"\n\nResults after {epoch + 1} rounds of training:\n")
                     results_file.write(f"---> Avg Training Loss: {avg_train_loss}\n")
                     # self.max_accuracy = max(self.max_accuracy, total_acc)
@@ -511,7 +530,7 @@ if __name__ == "__main__":
     print("Number of client epochs: ",round)
     # generate a random number in 1-100 to differtialte the results
 
-    save_path = "results/"  + "_random_" + str(random_number) + "/"  + ".txt"
-    with open(save_path, "w") as f:
-        f.write("Random number: " + str(random_number) + "\n")
-        f.write("Training finished." + "\n")
+    # save_path = "results/"  + "_random_" + str(random_number) + "/"  + ".txt"
+    # with open(save_path, "w") as f:
+    #     f.write("Random number: " + str(random_number) + "\n")
+    #     f.write("Training finished." + "\n")
