@@ -35,6 +35,7 @@ def arg_parser() -> argparse.ArgumentParser:
 
     parser.add_argument("--data_root", type=str, default="../datasets/")
     parser.add_argument("--model_name", type=str, default="cnn")
+    parser.add_argument("--dataset", type=str, default="cifar10")
 
     parser.add_argument("--non_iid", type=int, default=1)  # 0: IID, 1: Non-IID
     parser.add_argument("--n_clients", type=int, default=100)
@@ -50,10 +51,13 @@ def arg_parser() -> argparse.ArgumentParser:
     parser.add_argument("--log_every", type=int, default=1)
     parser.add_argument("--early_stopping", type=int, default=1)
 
-    parser.add_argument("--device", type=int, default=0)
+    parser.add_argument("--device", type=str, default="cuda")
 
     parser.add_argument("--wandb", type=bool, default=False)
     parser.add_argument("--wandb_project", type=str, default="FedAvg")
     parser.add_argument("--exp_name", type=str, default="exp")
+
+    # customized arguments
+    parser.add_argument("--pruning_side", type=str, default="client", choices=["client", "server"])
 
     return parser.parse_args()

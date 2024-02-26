@@ -5,11 +5,11 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.utils.data import DataLoader
-import math
 
 from data import MNISTDataset, FederatedSampler
 from models import CNN, MLP, vgg
 from utils import arg_parser, average_weights, Logger
+from prune.GraSP import GraSP, register_mask
 
 
 class FedAvg:
@@ -73,7 +73,7 @@ class FedAvg:
         return train_loader, test_loader
 
     def _train_client(
-        self, root_model: nn.Module, train_loader: DataLoader, client_idx: int
+        self, root_model: nn.Module, train_loader: DataLoader, client_idx: int, n_round: int, pruning_ratio: float
     ) -> Tuple[nn.Module, float]:
         """Train a client model.
 
@@ -81,6 +81,7 @@ class FedAvg:
             root_model (nn.Module): server model.
             train_loader (DataLoader): client data loader.
             client_idx (int): client index.
+            n_round (int): number of epoch(round) of the server
 
         Returns:
             Tuple[nn.Module, float]: client model, average client loss.
@@ -90,6 +91,19 @@ class FedAvg:
         optimizer = torch.optim.SGD(
             model.parameters(), lr=self.args.lr, momentum=self.args.momentum
         )
+
+        # for epoch #0, we use GraSP to find Sparse Mask, it need to use 10 x num_classes of data
+        if n_round == 0:
+            # how many iteration we achieve the final sparsity, now we single-shot
+            num_iterations = 1
+            assert pruning_ratio >= 0.0 and pruning_ratio <1.0, "Pruning ratio should be in [0.0, 1.0)."
+            if pruning_ratio > 0.0:
+                ratio = 1 - (1 - pruning_ratio) ** (1.0 / num_iterations)
+                masks = GraSP(model, ratio, train_loader, self.device,
+                              num_classes = 10,
+                              samples_per_class = 10,
+                              num_iters = 1)
+            register_mask(masks)
 
         for epoch in range(self.args.n_client_epochs):
             epoch_loss = 0.0
@@ -144,6 +158,7 @@ class FedAvg:
                     root_model=self.root_model,
                     train_loader=self.train_loader,
                     client_idx=client_idx,
+                    n_round=epoch,
                 )
                 clients_models.append(client_model.state_dict())
                 clients_losses.append(client_loss)
