@@ -10,7 +10,7 @@ from collections import OrderedDict
 def _forward_pre_hooks(masks):
     def pre_hook(module, input):
         if isinstance(module, nn.Linear) or isinstance(module, nn.Conv2d):
-            m = masks[module]
+            m = masks[str(module)]
             module.weight.data.mul_(m)
         else:
             raise NotImplementedError('Unsupported ' + m)
@@ -21,11 +21,23 @@ def _unregister_mask(model):
             m._backward_hooks = OrderedDict()
             m._forward_pre_hooks = OrderedDict()
 
-def register_mask(masks=None):
-        _unregister_mask()
+def register_mask(model, masks=None):
+        _unregister_mask(model)
+        layer_dict = dict()
+        for layer in model.modules():
+            layer_dict[str(layer)] = layer
         assert masks is not None, 'Masks should be generated first.'
-        for m in masks.keys():
-            m.register_forward_pre_hook(_forward_pre_hooks(masks))
+        for layer_name in masks.keys():
+            assert layer_name in layer_dict.keys(), 'mask key not in origin model!'
+            layer_dict[layer_name].register_forward_pre_hook(_forward_pre_hooks(masks))
+
+def pruning_by_mask(model, masks_dict):
+    layer_dict = dict()
+    for layer in model.modules():
+        layer_dict[str(layer)] = layer
+    for layer_name, mask in masks_dict.items():
+        if isinstance(layer_dict[layer_name], nn.Linear) or isinstance(layer_dict[layer_name], nn.Conv2d):
+            layer_dict[layer_name].weight.data.mul_(mask)
 
 def GraSP_fetch_data(dataloader, num_classes, samples_per_class):
     datas = [[] for _ in range(num_classes)]
@@ -80,7 +92,7 @@ def GraSP(net, ratio, train_dataloader, device, num_classes=10, samples_per_clas
     for layer in net.modules():
         if isinstance(layer, nn.Conv2d) or isinstance(layer, nn.Linear):
             if isinstance(layer, nn.Linear) and reinit:
-                nn.init.xavier_normal(layer.weight)
+                nn.init.xavier_normal_(layer.weight)
             weights.append(layer.weight)
 
     inputs_one = []
@@ -92,7 +104,7 @@ def GraSP(net, ratio, train_dataloader, device, num_classes=10, samples_per_clas
 
     print_once = False
     for it in range(num_iters):
-        print("Pruning (1): Iterations %d/%d." % (it, num_iters))
+        # print("Pruning (1): Iterations %d/%d." % (it, num_iters))
         inputs, targets = GraSP_fetch_data(train_dataloader, num_classes, samples_per_class)
         N = inputs.shape[0]
         din = copy.deepcopy(inputs)
@@ -133,7 +145,7 @@ def GraSP(net, ratio, train_dataloader, device, num_classes=10, samples_per_clas
     ret_targets = []
 
     for it in range(len(inputs_one)):
-        print("Pruning (2): Iterations %d/%d." % (it, num_iters))
+        # print("Pruning (2): Iterations %d/%d." % (it, num_iters))
         inputs = inputs_one.pop(0).to(device)
         targets = targets_one.pop(0).to(device)
         ret_inputs.append(inputs)
@@ -160,18 +172,18 @@ def GraSP(net, ratio, train_dataloader, device, num_classes=10, samples_per_clas
     # Gather all scores in a single vector and normalise
     all_scores = torch.cat([torch.flatten(x) for x in grads.values()])
     norm_factor = torch.abs(torch.sum(all_scores)) + eps
-    print("** norm factor:", norm_factor)
+    # print("** norm factor:", norm_factor)
     all_scores.div_(norm_factor)
 
     num_params_to_rm = int(len(all_scores) * (1-keep_ratio))
     threshold, _ = torch.topk(all_scores, num_params_to_rm, sorted=True)
-    # import pdb; pdb.set_trace()
     acceptable_score = threshold[-1]
-    print('** accept: ', acceptable_score)
+    # print('** accept: ', acceptable_score)
     keep_masks = dict()
     for m, g in grads.items():
-        keep_masks[m] = ((g / norm_factor) <= acceptable_score).float()
+        keep_masks[str(m)] = ((g / norm_factor) <= acceptable_score).float()
 
-    print(torch.sum(torch.cat([torch.flatten(x == 1) for x in keep_masks.values()])))
+    # print total number of non-zero
+    # print(torch.sum(torch.cat([torch.flatten(x == 1) for x in keep_masks.values()])))
 
     return keep_masks

@@ -1,5 +1,7 @@
 from typing import Any, Dict, List, Optional, Tuple
 import copy
+import argparse
+from collections import defaultdict
 import numpy as np
 import torch
 import torch.nn as nn
@@ -8,8 +10,8 @@ from torch.utils.data import DataLoader
 
 from data import MNISTDataset, FederatedSampler
 from models import CNN, MLP, vgg
-from utils import arg_parser, average_weights, Logger
-from prune.GraSP import GraSP, register_mask
+from utils import Logger, density_weights, density_masks
+from prune.GraSP import GraSP, register_mask, pruning_by_mask
 
 
 class FedAvg:
@@ -19,8 +21,9 @@ class FedAvg:
 
     def __init__(self, args: Dict[str, Any]):
         self.args = args
+        self.scheduler = [int(x) for x in self.args.lr_scheduler.split(",")]
         self.device = torch.device(
-            f"cuda:{args.device}" if torch.cuda.is_available() else "cpu"
+            f"cuda" if torch.cuda.is_available() and args.device == "gpu" else "cpu"
         )
         self.logger = Logger(args)
 
@@ -46,6 +49,7 @@ class FedAvg:
             raise ValueError(f"Invalid model name, {self.args.model_name}")
 
         self.reached_target_at = None  # type: int
+        self.client_masks = defaultdict(list)
 
     def _get_data(
         self, root: str, n_clients: int, n_shards: int, non_iid: int
@@ -70,10 +74,14 @@ class FedAvg:
         train_loader = DataLoader(train_set, batch_size=128, sampler=sampler)
         test_loader = DataLoader(test_set, batch_size=128)
 
+        # create a new dataloader to load a few samples for GraSP
+        # TODO: maybe not work for Non-IID, need to check it
+        self.GraSP_train_loader = DataLoader(train_set, batch_size=128, shuffle=True)
+
         return train_loader, test_loader
 
     def _train_client(
-        self, root_model: nn.Module, train_loader: DataLoader, client_idx: int, n_round: int, pruning_ratio: float
+        self, root_model: nn.Module, train_loader: DataLoader, client_idx: int, n_round: int, pruning_client:int, pruning_ratio: float
     ) -> Tuple[nn.Module, float]:
         """Train a client model.
 
@@ -90,20 +98,25 @@ class FedAvg:
         model.train()
         optimizer = torch.optim.SGD(
             model.parameters(), lr=self.args.lr, momentum=self.args.momentum
-        )
+        )     
 
         # for epoch #0, we use GraSP to find Sparse Mask, it need to use 10 x num_classes of data
-        if n_round == 0:
+        if client_idx not in self.client_masks.keys() and pruning_client:
             # how many iteration we achieve the final sparsity, now we single-shot
             num_iterations = 1
             assert pruning_ratio >= 0.0 and pruning_ratio <1.0, "Pruning ratio should be in [0.0, 1.0)."
             if pruning_ratio > 0.0:
                 ratio = 1 - (1 - pruning_ratio) ** (1.0 / num_iterations)
-                masks = GraSP(model, ratio, train_loader, self.device,
+                self.client_masks[client_idx].append(GraSP(model, ratio, self.GraSP_train_loader, self.device,
                               num_classes = 10,
                               samples_per_class = 10,
-                              num_iters = 1)
-            register_mask(masks)
+                              num_iters = 1))
+            # apply fake pruning: setting weights to zero
+            register_mask(model, self.client_masks[client_idx][-1])
+        
+        # apply pruning after get the global model first
+        # if pruning_client:
+        #     pruning_by_mask(model, self.client_masks[client_idx][-1])
 
         for epoch in range(self.args.n_client_epochs):
             epoch_loss = 0.0
@@ -129,8 +142,14 @@ class FedAvg:
 
             print(
                 f"Client #{client_idx} | Epoch: {epoch}/{self.args.n_client_epochs} | Loss: {epoch_loss} | Acc: {epoch_acc}",
-                end="\r",
+                # end="\r",
             )
+
+        # Do another round of pruning so that it will eliminate the non-zero introduced by back propagation
+        # if pruning_client:
+        #     pruning_by_mask(model, self.client_masks[client_idx][-1])
+        #     density = density_weights(model)
+        #     print(f"density of client model after local training: \n {[float(x) for x in density.values()]}")
 
         return model, epoch_loss / self.args.n_client_epochs
 
@@ -149,6 +168,17 @@ class FedAvg:
             # Train clients
             self.root_model.train()
 
+            # Set up global pruner and get mask
+            if args.pruning_side == "server":
+                self.global_masks = GraSP(self.root_model, args.pruning_ratio, self.GraSP_train_loader, device=self.device)
+                # register mask to the root model so that the test will have the exactly same mask
+                register_mask(self.root_model, self.global_masks)
+
+            # Learning rate scheduler
+            if epoch in self.scheduler: 
+                print(f"Changing learning rate: from {self.args.lr} to {self.args.lr*0.1}")
+                self.args.lr = self.args.lr * 0.1
+
             for client_idx in idx_clients:
                 # Set client in the sampler
                 self.train_loader.sampler.set_client(client_idx)
@@ -159,12 +189,17 @@ class FedAvg:
                     train_loader=self.train_loader,
                     client_idx=client_idx,
                     n_round=epoch,
+                    pruning_client=True if args.pruning_side=="client" else False,
+                    pruning_ratio=self.args.pruning_ratio,
                 )
                 clients_models.append(client_model.state_dict())
                 clients_losses.append(client_loss)
 
+            # TODO: Pruning on the client side before collect all weights, since the mask is all same and this will save upload bandwidth
+            # Need to implement pruning methods using client_model.state_dict() instead of client_model as in "pruning_by_mask()"
+
             # Update server model based on clients models
-            updated_weights = average_weights(clients_models)
+            updated_weights = self.average_weights(clients_models)
             self.root_model.load_state_dict(updated_weights)
 
             # Update average loss of this round
@@ -232,6 +267,50 @@ class FedAvg:
 
         return total_loss, total_acc
 
+    def average_weights(self, weights: List[Dict[str, torch.Tensor]]) -> Dict[str, torch.Tensor]:
+        weights_avg = copy.deepcopy(weights[0])
+
+        for key in weights_avg.keys():
+            for i in range(1, len(weights)):
+                weights_avg[key] += weights[i][key]
+            weights_avg[key] = torch.div(weights_avg[key], len(weights))
+
+        return weights_avg
+
+
+def arg_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument("--data_root", type=str, default="../datasets/")
+    parser.add_argument("--model_name", type=str, default="cnn")
+    parser.add_argument("--dataset", type=str, default="cifar10")
+
+    parser.add_argument("--non_iid", type=int, default=1)  # 0: IID, 1: Non-IID
+    parser.add_argument("--n_clients", type=int, default=100)
+    parser.add_argument("--n_shards", type=int, default=200)
+    parser.add_argument("--frac", type=float, default=0.1)
+
+    parser.add_argument("--n_epochs", type=int, default=1000)
+    parser.add_argument("--n_client_epochs", type=int, default=5)
+    parser.add_argument("--batch_size", type=int, default=16)
+    parser.add_argument("--optim", type=str, default="sgd")
+    parser.add_argument("--lr", type=float, default=0.1)
+    parser.add_argument("--momentum", type=float, default=0.9)
+    parser.add_argument("--lr_scheduler", type=str, default="400,800")
+    parser.add_argument("--log_every", type=int, default=1)
+    parser.add_argument("--early_stopping", type=int, default=1)
+
+    parser.add_argument("--device", type=str, default="gpu")
+
+    parser.add_argument("--wandb", type=bool, default=False)
+    parser.add_argument("--wandb_project", type=str, default="FedAvg")
+    parser.add_argument("--exp_name", type=str, default="exp")
+
+    # customized arguments
+    parser.add_argument("--pruning_side", type=str, default="client", choices=["client", "server"])
+    parser.add_argument("--pruning_ratio", type=float, default=0.9)
+
+    return parser.parse_args()
 
 if __name__ == "__main__":
     args = arg_parser()
