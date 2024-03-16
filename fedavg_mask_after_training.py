@@ -333,6 +333,7 @@ class FedAvg:
         print("-------------------")
         print(f"density of root model: \n {[float(x) for x in density_00.values()]}")
         with open("res_with_sparsity.txt", 'a') as results_file:
+            results_file.write(f"-------------------------\n")
             results_file.write(f"density of root model: \n {[float(x) for x in density_00.values()]}\n")
 
         model.train()
