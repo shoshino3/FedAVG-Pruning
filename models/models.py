@@ -56,12 +56,15 @@ class CNN(nn.Module):
 class vgg(nn.Module):
     def __init__(self, dataset='cifar10', depth=19, init_weights=True, cfg=None):
         super(vgg, self).__init__()
+        self.dataset = dataset
         if cfg is None:
             cfg = [64, 64, 'M', 128, 128, 'M', 256, 256, 256, 256, 'M', 512, 512, 512, 512, 'M', 512, 512, 512, 512]
 
         self.feature = self.make_layers(cfg, True)
  
-        if dataset == 'cifar10':
+        if dataset == 'mnist':
+            num_classes = 10
+        elif dataset == 'cifar10':
             num_classes = 10
         elif dataset == 'cifar100':
             num_classes = 100
@@ -74,7 +77,7 @@ class vgg(nn.Module):
 
     def make_layers(self, cfg, batch_norm=False):
         layers = []
-        in_channels = 3
+        in_channels = 1 if self.dataset == "mnist" else 3
         for v in cfg:
             if v == 'M':
                 layers += [nn.MaxPool2d(kernel_size=2, stride=2)]

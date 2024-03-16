@@ -1,2 +1,2 @@
-from .mnist import MNISTDataset
+from .datasets import *
 from .sampler import FederatedSampler

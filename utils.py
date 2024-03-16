@@ -3,6 +3,7 @@ from collections import OrderedDict
 import wandb
 import torch
 import torch.nn as nn
+import matplotlib.pyplot as plt
 
 
 class Logger:
@@ -16,6 +17,12 @@ class Logger:
     def log(self, logs: Dict[str, Any]) -> None:
         if self.wandb:
             self.wandb.log(logs)
+
+def plot_data(data_points:List, name:str):
+    fig, ax = plt.subplots()
+    ax.set_title(name)
+    ax.plot(list(range(len(data_points))), data_points)
+    plt.show()
 
 def calculate_density(tensor):
     zero_tensor = torch.zeros(tensor.shape, dtype=torch.float).to(tensor.device)
@@ -36,4 +43,3 @@ def density_masks(masks):
     for key, mask in masks.items():
         density[key] = calculate_density(mask)
     return density
-
