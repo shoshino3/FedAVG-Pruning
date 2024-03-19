@@ -4,6 +4,8 @@ import os
 import copy
 import torch
 import wandb
+from collections import OrderedDict
+import torch.nn as nn
 
 
 class Logger:
@@ -29,9 +31,31 @@ def average_weights(weights: List[Dict[str, torch.Tensor]]) -> Dict[str, torch.T
 
     return weights_avg
 
+def calculate_density(tensor):
+    zero_tensor = torch.zeros(tensor.shape, dtype=torch.float).to(tensor.device)
+    cmp_tensor = (tensor != zero_tensor)
+    return cmp_tensor.sum()/tensor.numel()
+
+def density_weights(model):
+    density = OrderedDict()
+    for layer in model.modules():
+        if isinstance(layer, nn.Conv2d) or isinstance(layer, nn.Linear):
+            data = layer.weight.data
+            density[layer] = calculate_density(data)
+    # print("Density of given model is: {}".format(density))
+    return density
+
+def density_masks(masks):
+    density = OrderedDict()
+    for key, mask in masks.items():
+        density[key] = calculate_density(mask)
+    return density
+
 
 def arg_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser()
+    # In your arg_parser() function, add an argument for the results file path.
+    parser.add_argument("--results_file", type=str, default="results.txt", help="Path to save training results")
 
     parser.add_argument("--data_root", type=str, default="../datasets/")
     parser.add_argument("--model_name", type=str, default="cnn")
