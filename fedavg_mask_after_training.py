@@ -24,10 +24,6 @@ from torchvision.datasets import MNIST, CIFAR10
 from torchvision.transforms import Compose, ToTensor, Normalize
 from torchvision import transforms
 
-from tensorboardX import SummaryWriter
-from ignite.engine import Events, create_supervised_trainer, create_supervised_evaluator
-from ignite.metrics import Accuracy, Loss
-from ignite.contrib.handlers import ProgressBar
 
 from snip import SNIP
 
@@ -329,12 +325,12 @@ class FedAvg:
         """
 
         model = copy.deepcopy(root_model)
-        density_00 = density_weights(model)
-        print("-------------------")
-        print(f"density of root model: \n {[float(x) for x in density_00.values()]}")
-        with open("res_with_sparsity.txt", 'a') as results_file:
-            results_file.write(f"-------------------------\n")
-            results_file.write(f"density of root model: \n {[float(x) for x in density_00.values()]}\n")
+        # density_00 = density_weights(model)
+        # print("-------------------")
+        # print(f"density of root model: \n {[float(x) for x in density_00.values()]}")
+        # with open("res_with_sparsity.txt", 'a') as results_file:
+        #     results_file.write(f"-------------------------\n")
+        #     results_file.write(f"density of root model: \n {[float(x) for x in density_00.values()]}\n")
 
         model.train()
         
@@ -342,21 +338,21 @@ class FedAvg:
             model.parameters(), lr=self.args.lr, momentum=self.args.momentum
         )
         # model = net
-        density_0 = density_weights(model)
-        print("-------------------")
-        print(f"density of client model before PRUNING: \n {[float(x) for x in density_0.values()]}")
-        with open("res_with_sparsity.txt", 'a') as results_file:
-            results_file.write(f"density of client model before PRUNING: \n {[float(x) for x in density_0.values()]}\n")
+        # density_0 = density_weights(model)
+        # print("-------------------")
+        # print(f"density of client model before PRUNING: \n {[float(x) for x in density_0.values()]}")
+        # with open("res_with_sparsity.txt", 'a') as results_file:
+        #     results_file.write(f"density of client model before PRUNING: \n {[float(x) for x in density_0.values()]}\n")
 
         # # Pre-training pruning using SKIP
-        keep_masks = SNIP(model, 0.5, train_loader, device)  # !!! check whether the model is the same as the one in the main function, or whether it is the same for all the clients. if so, only initialize once.
+        keep_masks = SNIP(model, 0.1, train_loader, device)  # !!! check whether the model is the same as the one in the main function, or whether it is the same for all the clients. if so, only initialize once.
         apply_prune_mask(model, keep_masks) # move this to the first client which mean each round only do once for all the clients
 
-        density_1 = density_weights(model)
-        print("-------------------")
-        print(f"density of client model after FIRST PRUNING: \n {[float(x) for x in density_1.values()]}")
-        with open("res_with_sparsity.txt", 'a') as results_file:
-            results_file.write(f"density of client model after FIRST PRUNING: \n {[float(x) for x in density_1.values()]}\n")
+        # density_1 = density_weights(model)
+        # print("-------------------")
+        # print(f"density of client model after FIRST PRUNING: \n {[float(x) for x in density_1.values()]}")
+        # with open("res_with_sparsity.txt", 'a') as results_file:
+        #     results_file.write(f"density of client model after FIRST PRUNING: \n {[float(x) for x in density_1.values()]}\n")
 
         for epoch in range(self.args.n_client_epochs): # epochs <= 30
             epoch_loss = 0.0
@@ -384,19 +380,19 @@ class FedAvg:
                 f"Client #{client_idx} | Epoch: {epoch}/{self.args.n_client_epochs} | Loss: {epoch_loss} | Acc: {epoch_acc}",
                 end="\r",
             )
-        density_2 = density_weights(model)
-        print("-------------------")
-        print(f"density of client model after TRAINING: \n {[float(x) for x in density_2.values()]}")
-        with open("res_with_sparsity.txt", 'a') as results_file:
-            results_file.write(f"density of client model after TRAINING: \n {[float(x) for x in density_2.values()]}\n")
+        # density_2 = density_weights(model)
+        # print("-------------------")
+        # print(f"density of client model after TRAINING: \n {[float(x) for x in density_2.values()]}")
+        # with open("res_with_sparsity.txt", 'a') as results_file:
+        #     results_file.write(f"density of client model after TRAINING: \n {[float(x) for x in density_2.values()]}\n")
 
         # keep_masks = SNIP(model, 0.5, train_loader, device)  # generate a new pruning mask
         apply_prune_mask(model, keep_masks)
-        density_3 = density_weights(model)
-        print("-------------------")
-        print(f"density of client model after SECOND PRUNING: \n {[float(x) for x in density_3.values()]}")
-        with open("res_with_sparsity.txt", 'a') as results_file:
-            results_file.write(f"density of client model after SECOND PRUNING: \n {[float(x) for x in density_3.values()]}\n")
+        # density_3 = density_weights(model)
+        # print("-------------------")
+        # print(f"density of client model after SECOND PRUNING: \n {[float(x) for x in density_3.values()]}")
+        # with open("res_with_sparsity.txt", 'a') as results_file:
+        #     results_file.write(f"density of client model after SECOND PRUNING: \n {[float(x) for x in density_3.values()]}\n")
 
         return model, epoch_loss / self.args.n_client_epochs
 
@@ -412,18 +408,18 @@ class FedAvg:
             m = max(int(self.args.frac * self.args.n_clients), 1)
             idx_clients = np.random.choice(range(self.args.n_clients), m, replace=False)
 
-            density_r0 = density_weights(self.root_model)
-            print("---------11----------")
-            print(f"density of root model before training: \n {[float(x) for x in density_r0.values()]}")
-            with open("res_with_sparsity.txt", 'a') as results_file:
-                results_file.write(f"density of root model before training: \n {[float(x) for x in density_r0.values()]}\n")
+            # density_r0 = density_weights(self.root_model)
+            # print("---------11----------")
+            # print(f"density of root model before training: \n {[float(x) for x in density_r0.values()]}")
+            # with open("res_with_sparsity.txt", 'a') as results_file:
+            #     results_file.write(f"density of root model before training: \n {[float(x) for x in density_r0.values()]}\n")
             # Train clients
             self.root_model.train()
-            density_r1 = density_weights(self.root_model)
-            print("---------22----------")
-            print(f"density of root model after training: \n {[float(x) for x in density_r1.values()]}")
-            with open("res_with_sparsity.txt", 'a') as results_file:
-                results_file.write(f"density of root model after training: \n {[float(x) for x in density_r1.values()]}\n")
+            # density_r1 = density_weights(self.root_model)
+            # print("---------22----------")
+            # print(f"density of root model after training: \n {[float(x) for x in density_r1.values()]}")
+            # with open("res_with_sparsity.txt", 'a') as results_file:
+            #     results_file.write(f"density of root model after training: \n {[float(x) for x in density_r1.values()]}\n")
 
             for client_idx in idx_clients:
                 # Set client in the sampler
@@ -435,11 +431,11 @@ class FedAvg:
                     train_loader=self.train_loader,
                     client_idx=client_idx,
                 )
-                density_client = density_weights(client_model)
-                print("---------33----------")
-                print(f"density of client model after training: \n {[float(x) for x in density_client.values()]}")
-                with open("res_with_sparsity.txt", 'a') as results_file:
-                    results_file.write(f"density of client model after training: \n {[float(x) for x in density_client.values()]}\n")
+                # density_client = density_weights(client_model)
+                # print("---------33----------")
+                # print(f"density of client model after training: \n {[float(x) for x in density_client.values()]}")
+                # with open("res_with_sparsity.txt", 'a') as results_file:
+                #     results_file.write(f"density of client model after training: \n {[float(x) for x in density_client.values()]}\n")
                 clients_models.append(client_model.state_dict())
                 clients_losses.append(client_loss)
 
@@ -496,13 +492,13 @@ class FedAvg:
                 )
                 
                 # Open the results file in append mode and write the results
-                with open("res_with_sparsity.txt", 'a') as results_file:
-                    results_file.write(f"\n\nResults after {epoch + 1} rounds of training:\n")
-                    results_file.write(f"---> Avg Training Loss: {avg_train_loss}\n")
-                    results_file.write(f"---> Avg Test Loss: {total_loss} | Avg Test Accuracy: {total_acc}\n")
-                    print("---------max acc----------")
-                    self.max_accuracy = max(self.max_accuracy, total_acc)
-                    results_file.write("max_acc, " + str(self.max_accuracy) + "\n")
+                # with open("res_with_sparsity.txt", 'a') as results_file:
+                #     results_file.write(f"\n\nResults after {epoch + 1} rounds of training:\n")
+                #     results_file.write(f"---> Avg Training Loss: {avg_train_loss}\n")
+                #     results_file.write(f"---> Avg Test Loss: {total_loss} | Avg Test Accuracy: {total_acc}\n")
+                #     print("---------max acc----------")
+                #     self.max_accuracy = max(self.max_accuracy, total_acc)
+                #     results_file.write("max_acc, " + str(self.max_accuracy) + "\n")
 
                 # Early stopping
                 if self.args.early_stopping and self.reached_target_at is not None:
