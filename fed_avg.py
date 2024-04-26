@@ -11,7 +11,7 @@ from torch.utils.data import DataLoader
 from data import MNISTDataset, CIFAR10Dataset, FederatedSampler
 from models import CNN, MLP, vgg
 from utils import Logger, density_weights, density_masks, plot_data
-from prune.GraSP import GraSP, register_mask, _unregister_mask, pruning_by_mask
+from prune.GraSP import GraSP, register_forward_mask, register_backward_mask, pruning_by_mask, _unregister_forward_mask, _unregister_backward_mask
 
 
 class FedAvg:
@@ -104,7 +104,8 @@ class FedAvg:
         model = copy.deepcopy(root_model)
         # if self.args.pruning and self.args.pruning_side == "server":
         #     # deepcopy will also copy the hook function, to remove the hook function on the client model
-        #     _unregister_mask(model)
+        #     _unregister_forward_mask(model)
+        #     _unregister_backward_mask(model)
         model.train()
         optimizer = torch.optim.SGD(
             model.parameters(), lr=self.args.learning_rate, momentum=self.args.momentum
@@ -123,7 +124,8 @@ class FedAvg:
                               samples_per_class = 10,
                               num_iters = 1))
             # apply fake pruning: setting weights to zero
-            register_mask(model, self.client_masks[client_idx][-1])
+            register_forward_mask(model, self.client_masks[client_idx][-1])
+            register_backward_mask(model, self.client_masks[client_idx][-1])
         
         # apply pruning after get the global model first
         # if pruning_client:
@@ -186,12 +188,13 @@ class FedAvg:
             if args.pruning and args.pruning_side == "server":
                 self.global_masks = GraSP(self.root_model, args.pruning_ratio, self.GraSP_train_loader, device=self.device)
                 # register mask to the root model so that the test will have the exactly same mask
-                register_mask(self.root_model, self.global_masks)
+                register_forward_mask(self.root_model, self.global_masks)
+                register_backward_mask(self.root_model, self.global_masks)
             
             # Learning rate scheduler
             if epoch in self.scheduler: 
-                print(f"Changing learning rate: from {self.args.lr} to {self.args.lr*0.1}")
-                self.args.lr = self.args.lr * 0.1
+                print(f"Changing learning rate: from {self.args.learning_rate} to {self.args.learning_rate*0.1}")
+                self.args.learning_rate *= 0.1
 
             for client_idx in idx_clients:
                 # Set client in the sampler
@@ -313,8 +316,8 @@ def arg_parser() -> argparse.ArgumentParser:
     parser.add_argument("--n_shards", type=int, default=200)
     parser.add_argument("--frac", type=float, default=0.1)
 
-    parser.add_argument("-se", "--n_epochs", type=int, default=1000)
-    parser.add_argument("-ce", "--n_client_epochs", type=int, default=5)
+    parser.add_argument("-se", "--n_epochs", type=int, default=1500)
+    parser.add_argument("-ce", "--n_client_epochs", type=int, default=10)
     parser.add_argument("--batch_size", type=int, default=128)
     parser.add_argument("--optim", type=str, default="sgd")
     parser.add_argument("-lr", "--learning_rate", type=float, default=0.1)

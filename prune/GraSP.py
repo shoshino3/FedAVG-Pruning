@@ -16,20 +16,39 @@ def _forward_pre_hooks(masks):
             raise NotImplementedError('Unsupported ' + m)
     return pre_hook
 
-def _unregister_mask(model):
-        for m in model.modules():
-            m._backward_hooks = OrderedDict()
-            m._forward_pre_hooks = OrderedDict()
+def _grad_hook(mask):
+    def g_hook(grad):
+        return grad * mask
+    return g_hook
 
-def register_mask(model, masks=None):
-        _unregister_mask(model)
-        layer_dict = dict()
-        for layer in model.modules():
-            layer_dict[str(layer)] = layer
-        assert masks is not None, 'Masks should be generated first.'
-        for layer_name in masks.keys():
-            assert layer_name in layer_dict.keys(), 'mask key not in origin model!'
-            layer_dict[layer_name].register_forward_pre_hook(_forward_pre_hooks(masks))
+def _unregister_forward_mask(model):
+    for m in model.modules():
+        m._forward_pre_hooks = OrderedDict()
+
+def _unregister_backward_mask(model):
+    for m in model.modules():
+        m._backward_hooks = OrderedDict()
+
+def register_forward_mask(model, masks=None):
+    _unregister_forward_mask(model)
+    layer_dict = dict()
+    for layer in model.modules():
+        layer_dict[str(layer)] = layer
+    assert masks is not None, 'Masks should be generated first.'
+    for layer_name in masks.keys():
+        assert layer_name in layer_dict.keys(), 'mask key not in origin model!'
+        layer_dict[layer_name].register_forward_pre_hook(_forward_pre_hooks(masks))
+
+def register_backward_mask(model, masks=None):
+    _unregister_backward_mask(model)
+    layer_dict = dict()
+    for layer in model.modules():
+        layer_dict[str(layer)] = layer
+    assert masks is not None, 'Masks should be generated first.'
+    for layer_name in masks.keys():
+        assert layer_name in layer_dict.keys(), 'mask key not in origin model!'
+        assert masks[layer_name].shape == layer_dict[layer_name].weight.shape, 'Mask shape mismatches the weight shape!'
+        layer_dict[layer_name].weight.register_hook(_grad_hook(masks[layer_name]))
 
 def pruning_by_mask(model, masks_dict):
     layer_dict = dict()
