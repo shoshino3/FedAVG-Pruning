@@ -129,7 +129,7 @@ class FedAvg:
                 epoch_samples += data.size(0)
 
             # Calculate average accuracy and loss
-            epoch_loss /= idx
+            epoch_loss /= (idx+1)
             epoch_acc = epoch_correct / epoch_samples ##TODO
 
             print(
