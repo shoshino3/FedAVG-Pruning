@@ -63,7 +63,7 @@ class FederatedSampler(Sampler):
                 min_size = min([len(idx_j) for idx_j in idx_batch])
             #print("min_size:", min_size)
         for j in range(self.n_clients):
-            print(f"Client {j}: len={len(idx_batch[j])}")
+            # print(f"Client {j}: len={len(idx_batch[j])}")
             np.random.shuffle(idx_batch[j])
             dict_users[j] = idx_batch[j]
                 
