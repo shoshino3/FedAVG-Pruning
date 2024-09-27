@@ -90,7 +90,7 @@ class FedAvg:
             model.parameters(), lr=self.args.lr, momentum=self.args.momentum
         )
 
-        for epoch in range(self.args.n_client_epochs):
+        for epoch in range(self.args.n_client_epochs): #client epoch 
             epoch_loss = 0.0
             epoch_correct = 0
             epoch_samples = 0
@@ -123,7 +123,7 @@ class FedAvg:
         """Train a server model."""
         train_losses = []
 
-        for epoch in range(self.args.n_epochs):
+        for epoch in range(self.args.n_epochs): #rounds = epoch 
             clients_models = []
             clients_losses = []
 

@@ -10,7 +10,7 @@ class FederatedSampler(Sampler):
         dataset: Sequence,
         non_iid: int,
         n_clients: Optional[int] = 100,
-        n_shards: Optional[int] = 200,
+       
     ):
         """Sampler for federated learning in both iid and non-iid settings.
 
@@ -23,7 +23,7 @@ class FederatedSampler(Sampler):
         self.dataset = dataset
         self.non_iid = non_iid
         self.n_clients = n_clients
-        self.n_shards = n_shards
+      
 
         if self.non_iid:
             self.dict_users = self._sample_non_iid()
@@ -40,33 +40,6 @@ class FederatedSampler(Sampler):
 
         return dict_users
 
-    """
-    def _sample_non_iid(self) -> Dict[int, List[int]]:
-        num_imgs = len(self.dataset) // self.n_shards  # 300
-
-        idx_shard = [i for i in range(self.n_shards)]
-        dict_users = {i: np.array([]) for i in range(self.n_clients)}
-        idxs = np.arange(self.n_shards * num_imgs)
-        #labels = self.dataset.train_labels.numpy()
-        labels = np.array(self.dataset.targets)
-        # sort labels
-        idxs_labels = np.vstack((idxs, labels))
-        idxs_labels = idxs_labels[:, idxs_labels[1, :].argsort()]
-        idxs = idxs_labels[0, :]
-
-        # divide and assign 2 shards/client
-        for i in range(self.n_clients):
-            rand_set = set(np.random.choice(idx_shard, 2, replace=False))
-            idx_shard = list(set(idx_shard) - rand_set)
-            for rand in rand_set:
-                dict_users[i] = np.concatenate(
-                    (dict_users[i], idxs[rand * num_imgs : (rand + 1) * num_imgs]),
-                    axis=0,
-                )
-
-        return dict_users
-    
-    """
     def _sample_non_iid(self) -> Dict[int, List[int]]:
         print("sampling non_iid")
         min_size = 0
