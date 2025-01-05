@@ -1,0 +1,18 @@
+#!/bin/bash
+
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --partition=gpu
+#SBATCH --cpus-per-task=16
+#SBATCH --gpus-per-task=a100:1
+#SBATCH --mem=64GB
+#SBATCH --time=15:00:00
+
+module purge
+module load nvhpc/23.11
+
+# conda activate primary
+cd /home1/zeliliu/fed/FedPaI-EarlyBird
+
+# python -u fed_avg.py -m vgg -p -ps client -pr $1 -dc 100,200,300,400,500,600,700,800,900,1000,1100,1200,1300,1400,1500
+python -u fed_avg.py -m vgg -p -ps $1 -i $2 -pr $3 -a $4 -dc -lrs 400,800

@@ -4,7 +4,9 @@ import os
 import copy
 import torch
 import wandb
-
+import matplotlib.pyplot as plt
+import torch.nn as nn
+import time
 
 class Logger:
     def __init__(self, args):
@@ -29,32 +31,62 @@ def average_weights(weights: List[Dict[str, torch.Tensor]]) -> Dict[str, torch.T
 
     return weights_avg
 
+def plot_data(data_points:List, pruning_side, non_iid, alpha, name:str, ifacc=True):
+    non_iid="Non_IID" if non_iid else "IID"
+    fig, ax = plt.subplots()
+    if ifacc:
+        ax.set_title(f"{name},best:{max(data_points)} at epoch {data_points.index(max(data_points))}")
+    else:
+        ax.set_title(f"{name},best:{min(data_points)} at epoch {data_points.index(min(data_points))}")
+    ax.plot(list(range(len(data_points))), data_points)
+    filepath = f"curve/{pruning_side}/{non_iid}"
+    if non_iid=="Non_IID":
+        filepath += f"/alpha_{alpha}"
+    os.makedirs(filepath, exist_ok=True)
+    plt.savefig(f"{filepath}/{name}.png")
+    plt.close()
+    
+def count_zero_weights(model, s = ""): #sanity check, does not add to the logic of the code
+    print(s)
+    zero_channel_count = 0
+    
+    for layer in model.modules():
+        if isinstance(layer, nn.BatchNorm2d) or isinstance(layer, nn.BatchNorm1d):
+    
+            zero_weights = layer.weight == 0
+            zero_channel_count += torch.sum(zero_weights).item()
+            
+    print("Number of zero channels: ", zero_channel_count)
+    
 
-def arg_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser()
 
-    parser.add_argument("--data_root", type=str, default="../datasets/")
-    parser.add_argument("--model_name", type=str, default="cnn")
+def print_model_size(model, base_dir="models", delete_after=True):
+    # Generate a timestamped folder
+    timestamp = int(time.time() * 1000)
+    folder_path = os.path.join(base_dir, f"model_{timestamp}")
+    os.makedirs(folder_path, exist_ok=True)
+    
+    # Define the filepath for the model
+    filepath = os.path.join(folder_path, "model.pth")
+    
+    # Save the model
+    torch.save(model.state_dict(), filepath)
+    
+    # Get the file size in MB
+    model_size = os.path.getsize(filepath) / (1024 ** 2)
+    print(f"Model file size: {model_size:.4f} MB")
+    
+    # Optionally delete the folder and file
+    if delete_after:
+        os.remove(filepath)
+        os.rmdir(folder_path)
+        
 
-    parser.add_argument("--non_iid", type=int, default=1)  # 0: IID, 1: Non-IID
-    parser.add_argument("--n_clients", type=int, default=100)
-    parser.add_argument("--n_shards", type=int, default=200)
-    parser.add_argument("--frac", type=float, default=0.1)
-
-    parser.add_argument("--n_epochs", type=int, default=1000)
-    parser.add_argument("--n_client_epochs", type=int, default=5)
-    parser.add_argument("--batch_size", type=int, default=10)
-    parser.add_argument("--optim", type=str, default="sgd")
-    parser.add_argument("--lr", type=float, default=0.01)
-    parser.add_argument("--momentum", type=float, default=0.9)
-    parser.add_argument("--log_every", type=int, default=1)
-    parser.add_argument("--early_stopping", type=int, default=1)
-
-    parser.add_argument("--device", type=int, default=0)
-
-    parser.add_argument("--wandb", type=bool, default=False)
-    parser.add_argument("--wandb_project", type=str, default="FedAvg")
-    parser.add_argument("--exp_name", type=str, default="exp")
-    parser.add_argument('--save', default='./logs', type=str, metavar='PATH',
-                    help='path to save prune model (default: current directory)')
-    return parser.parse_args()
+def count_parameters(model, trainable_only=True):
+    if trainable_only:
+        # only count the trainable parameters
+        total_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+    else:
+        # count all parameters
+        total_params = sum(p.numel() for p in model.parameters())
+    return total_params

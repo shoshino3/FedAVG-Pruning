@@ -4,3 +4,5 @@
 wandb/
 *.pyc
 *.pth.tar
+.DS_Store
+*.pdf
