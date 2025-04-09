@@ -10,8 +10,8 @@ import os, time
 import argparse
 import shutil
 
-from data import MNISTDataset, CIFAR10Dataset, FederatedSampler
-from models import CNN, MLP, vgg
+from data import MNISTDataset, CIFAR10Dataset, FederatedSampler, CIFAR100Dataset
+from models import CNN, MLP, vgg, ResNet18
 from utils import average_weights, Logger, plot_data, print_model_size
 from EarlyBird import EarlyBird, actual_prune
 
@@ -24,6 +24,7 @@ class FedAvg:
     def __init__(self, args: Dict[str, Any]):
         self.args = args
         self.args.pruning_ratio = 0 if not self.args.pruning else self.args.pruning_ratio
+        self.args.pruning = False if self.args.pruning_ratio == 0 else self.args.pruning
         print(f"Running with args: {self.args}")
         self.scheduler = [int(x) for x in self.args.lr_scheduler.split(",")] if self.args.lr_scheduler else []
         self.device = torch.device(
@@ -50,15 +51,16 @@ class FedAvg:
                 self.device
             )
             self.target_acc = 0.97
-            
         elif self.args.model_name == "cnn":
-            self.root_model = CNN(n_channels=3, n_classes=10).to(self.device)
-            self.target_acc = 0.85
-            
+            self.root_model = CNN(n_channels=3 if self.args.dataset=="cifar10" else 1, n_classes=10).to(self.device)
+            self.target_acc = 0.99
         elif self.args.model_name == "vgg":
-            self.root_model = vgg(dataset='cifar10', depth=19).to(self.device)
+            assert self.args.dataset != "mnist", "do not support mnist dataset on vgg now."
+            self.root_model = vgg(dataset=self.args.dataset, depth=19).to(self.device)
             self.target_acc = 0.85
-            
+        elif self.args.model_name == "resnet18":
+            self.root_model = ResNet18(dataset=self.args.dataset).to(self.device)
+            self.target_acc = 0.99 # need to be updated
         else:
             raise ValueError(f"Invalid model name, {self.args.model_name}")
 
@@ -82,12 +84,18 @@ class FedAvg:
         if self.args.dataset == "mnist":
             train_set = MNISTDataset(root=root, train=True)
             test_set = MNISTDataset(root=root, train=False)
+            self.num_classes = 10
         elif self.args.dataset == "cifar10":
-            train_set = CIFAR10Dataset(root=root, train=True)
+            train_set = CIFAR10Dataset(root=root, train=True, data_augmentation=True)
             test_set = CIFAR10Dataset(root=root, train=False)
+            self.num_classes = 10
+        elif self.args.dataset == "cifar100":
+            train_set = CIFAR100Dataset(root=root, train=True, data_augmentation=True)
+            test_set = CIFAR100Dataset(root=root, train=False)
+            self.num_classes = 100
 
         sampler = FederatedSampler(
-            train_set, non_iid=non_iid, n_clients=n_clients, n_shards=n_shards, alpha=alpha
+            train_set, dataset_type=self.args.dataset, non_iid=non_iid, n_clients=n_clients, n_shards=n_shards, alpha=alpha
         )
 
         train_loader = DataLoader(train_set, batch_size=self.args.batch_size, sampler=sampler)
@@ -257,6 +265,8 @@ class FedAvg:
         print_model_size(self.root_model)
         
         if self.args.draw_curve:
+            print(f"Non_IID: {self.args.non_iid}, alpha: {self.args.alpha}, pruning ratio: {self.args.pruning_ratio}, side: {self.args.pruning_side}, Dataset: {self.args.dataset}, model: {self.args.model_name}")
+            print(f"overall best accuracy: {max(self.accuracy)} at epoch {self.accuracy.index(max(self.accuracy))}")
             plot_data(self.accuracy, self.args.pruning_side, self.args.non_iid, self.args.alpha, f"acc_pr_{self.args.pruning_ratio}", ifacc=True)
             plot_data(self.loss, self.args.pruning_side, self.args.non_iid, self.args.alpha, f"loss_pr_{self.args.pruning_ratio}",ifacc=False)
 
@@ -295,7 +305,7 @@ def arg_parser() -> argparse.ArgumentParser:
 
     parser.add_argument("--data_root", type=str, default="../datasets/")
     parser.add_argument("-m", "--model_name", type=str, default="vgg")
-    parser.add_argument("-d", "--dataset", type=str, default="cifar10", choices=["cifar10", "mnist"])
+    parser.add_argument("-d", "--dataset", type=str, default="cifar10", choices=["cifar10", "cifar100", "mnist"])
 
     parser.add_argument("-i", "--non_iid", type=int, default=0)  # 0: IID, 1: Non-IID
     parser.add_argument("-a", "--alpha", type=float, default=10)

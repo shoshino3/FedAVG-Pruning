@@ -9,7 +9,7 @@
 #SBATCH --time=30:00:00
 
 module purge
-module load nvhpc/23.11
+module load nvhpc/24.5
 
 # conda activate primary
 cd /home1/zeliliu/fed/FedPaI-EarlyBird
